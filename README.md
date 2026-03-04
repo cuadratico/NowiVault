@@ -16,11 +16,11 @@ So far, NothingK is only available in this repo, Izzysoft, androidfreeware and O
 Other platforms not mentioned that contain NothingK may not be secure.
 Be careful.
 
-[![Static Badge](https://img.shields.io/badge/izzyOnDroid-0.3.21_Pokemon_X-179DE6)](https://apt.izzysoft.de/fdroid/index/apk/com.nothingsecure) 
+[![Static Badge](https://img.shields.io/badge/izzyOnDroid-0.3.21-Pokemon_X-179DE6)](https://apt.izzysoft.de/fdroid/index/apk/com.nothingsecure) 
 
-[![Static Badge](https://img.shields.io/badge/AndroidFreeWare-0.3.21_Pokemon_X-BD7923)](https://www.androidfreeware.net/es/download-nothing-k-apk.html)
+[![Static Badge](https://img.shields.io/badge/AndroidFreeWare-0.3.21-Pokemon_X-BD7923)](https://www.androidfreeware.net/es/download-nothing-k-apk.html)
 
-[![Static Badge](https://img.shields.io/badge/OpenAPK-0.3.21_Pokemon_X-3F36AA)](https://www.openapk.net/es/nothing-k/com.nothingsecure/)
+[![Static Badge](https://img.shields.io/badge/OpenAPK-0.3.21-Pokemon_X-3F36AA)](https://www.openapk.net/es/nothing-k/com.nothingsecure/)
 
 
 
