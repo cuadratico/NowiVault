@@ -3,10 +3,13 @@
 
 ![App Screenshot](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/icon.png)
 
+# Next update of Nothing K
+Nothing K can no longer rely on an aesthetic and ethic that isn't its own, which is why Nothing K is merging with the other projects of the "Nowi" project. This means the name will change from Nothing K to Nowi Vault, and it will be updated with new features such as APK hash verification within Nowi Vault, greater compatibility with more symmetric algorithms like ChaCha 20 and derivation algorithms like Argon2, and potential compatibility with KeyPass.
+Thank you for your support ❤️
+
 # NothingK?
 
-A digital vault for storing passwords with symmetric cryptography. NothingK uses AES256/GCM.
-NothingK also includes a password generator, encrypted logs and a file export and import system.
+A vault to securely manage your information, with zero intruders, entirely local, and customized to your liking. NothingK wants you to innovate, not be like everyone else.
 
 # Important notice!
 NothingK is not a collaboration with Nothing (company), meaning that no Nothing Technology (company) developers or any of its technology have been used in the development of NothingK. NothingK is my own project, developed with open-source technologies and under legal licenses.
