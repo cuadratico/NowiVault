@@ -7,14 +7,17 @@
 The development of NowiVault is nearing completion. I'm fixing the last bugs and implementing the final updates. A preview announcement for the update will be uploaded soon.
 Thank you for your trust ♥️
 
-# NothingK?
+[![New trailer for NowiVault](https://img.youtube.com/vi/SDBv9-ycrRc/0.jpg)](https://youtu.be/SDBv9-ycrRc)
+
+
+# NothingK? (NowiVault)
 
 A vault to securely manage your information, with zero intruders, entirely local, and customized to your liking. NothingK wants you to innovate, not be like everyone else.
 
 # Important notice!
 NothingK is not a collaboration with Nothing (company), meaning that no Nothing Technology (company) developers or any of its technology have been used in the development of NothingK. NothingK is my own project, developed with open-source technologies and under legal licenses.
 
-# Where to download NothingK
+# Where to download NothingK (NowiVault)
 So far, NothingK is only available in this repo, Izzysoft, androidfreeware and OpenAPK. It's also being approved for F-Droid.
 Other platforms not mentioned that contain NothingK may not be secure.
 Be careful.
