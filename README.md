@@ -1,7 +1,14 @@
 
 
 
+
+
 ![App Screenshot](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/icon.png)
+
+# How can I submit proposals for NowiVault?
+Nowi has made a form available for submitting formal proposals for the new update (NowiVault)
+
+[![Static Badge](https://img.shields.io/badge/--NowiVault--Proposal-179DE6)](https://docs.google.com/forms/d/e/1FAIpQLSfyW_uUiiXtZy6lkawKgNxcVQ17CC27cNS2-J1uDVjgn8LHLw/viewform?usp=dialog) 
 
 # NowiVault is almost here!!!
 The development of NowiVault is nearing completion. I'm fixing the last bugs and implementing the final updates. A preview announcement for the update will be uploaded soon.
@@ -22,11 +29,11 @@ So far, NothingK is only available in this repo, Izzysoft, androidfreeware and O
 Other platforms not mentioned that contain NothingK may not be secure.
 Be careful.
 
-[![Static Badge](https://img.shields.io/badge/izzyOnDroid-0.3.21-Pokemon_X-179DE6)](https://apt.izzysoft.de/fdroid/index/apk/com.nothingsecure) 
+[![Static Badge](https://img.shields.io/badge/izzyOnDroid-0.3.21--Pokemon_X-179DE6)](https://apt.izzysoft.de/fdroid/index/apk/com.nothingsecure) 
 
-[![Static Badge](https://img.shields.io/badge/AndroidFreeWare-0.3.21-Pokemon_X-BD7923)](https://www.androidfreeware.net/es/download-nothing-k-apk.html)
+[![Static Badge](https://img.shields.io/badge/AndroidFreeWare-0.3.21--Pokemon_X-BD7923)](https://www.androidfreeware.net/es/download-nothing-k-apk.html)
 
-[![Static Badge](https://img.shields.io/badge/OpenAPK-0.3.21-Pokemon_X-3F36AA)](https://www.openapk.net/es/nothing-k/com.nothingsecure/)
+[![Static Badge](https://img.shields.io/badge/OpenAPK-0.3.21--Pokemon_X-3F36AA)](https://www.openapk.net/es/nothing-k/com.nothingsecure/)
 
 
 
@@ -44,13 +51,7 @@ An analysis with MOBFS has also been performed.
  - Tools: AES256/GCM, AndroidKeyStore, security and Biometric Library (Android), PBKDF2 (Key derivation algorithm) and Json
 
  ## Screenshots
-
-![App Screenshot](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_1.png)
-![App Screenshot](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_2.png)
-![App Screenshot](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_3.png)
-![App Screenshot](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_4.png)
-![App Screenshot](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_5.png)
-![App Screenshot](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_6.png)
-
-
-
+||||
+| :---: | :---: | :---: |
+| ![Descripción 1](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_1.png) | ![Descripción 2](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_2.png) | ![Descripción 3](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_3.png) |
+| ![Descripción 4](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_4.png) | ![Descripción 5](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_5.png) | ![Descripción 6](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/image_6.png) |
