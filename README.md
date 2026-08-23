@@ -1,9 +1,6 @@
 
-
-
-
-
-![App Screenshot](https://github.com/cuadratico/NothingK/blob/master/fastlane/metadata/android/en-US/images/icon.png)
+# First beta of NowiVault 😁
+[![Static Badge](https://img.shields.io/badge/beta_1-179DE6)](https://github.com/cuadratico/NowiVault/releases/tag/Vbeta_1) 
 
 # How can I submit proposals for NowiVault?
 Nowi has made a form available for submitting formal proposals for the new update (NowiVault)
