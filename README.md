@@ -1,6 +1,6 @@
 
-# First beta of NowiVault 😁
-[![Static Badge](https://img.shields.io/badge/beta_1-179DE6)](https://github.com/cuadratico/NowiVault/releases/tag/Vbeta_1) 
+# Second beta of NowiVault 😁
+[![Static Badge](https://img.shields.io/badge/beta_2-179DE6)](https://github.com/cuadratico/NowiVault/releases/tag/Vbeta_2) 
 
 # How can I submit proposals for NowiVault?
 Nowi has made a form available for submitting formal proposals for the new update (NowiVault)
