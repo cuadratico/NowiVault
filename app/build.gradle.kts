@@ -9,10 +9,10 @@ android {
 
     defaultConfig {
         applicationId = "com.nothingsecure"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 36
-        versionCode = 31
-        versionName = "0.3.21-Pokemon_X"
+        versionCode = 34
+        versionName = "1.3.21-Nikola_Tesla"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -42,14 +42,15 @@ android {
 
 dependencies {
 
+    implementation(libs.lottie)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.security.crypto)
-    implementation (libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.biometric)
+    implementation (libs.androidx.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/pixel"
+        android:textSize="17dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/all"
+        android:layout_marginBottom="20dp"
+        android:maxWidth="300dp"
+        android:text="Configure your cryptographic key"
+        android:textColor="@color/n_white"
+        />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/corner_25"
+        android:backgroundTint="@color/b_black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:minWidth="250dp"
+        >
+
+        <!-- seleccion de algoritmo -->
+        <TextView
+            android:id="@+id/algori"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:textColor="@color/n_white"
+            android:fontFamily="@font/pixel"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/algori_edit"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:src="@drawable/bidirection_arrows_blue"
+            app:layout_constraintTop_toTopOf="@id/algori"
+            app:layout_constraintBottom_toBottomOf="@id/algori"
+            app:layout_constraintStart_toEndOf="@id/algori"
+            android:layout_marginStart="10dp"
+            />
+
+        <!-- seleccion de la longitud de la clave -->
+        <TextView
+            android:id="@+id/size_expre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/algori"
+            app:layout_constraintEnd_toStartOf="@id/b_ce"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="2dp"
+            app:boxStrokeColor="@color/style_edit_text"
+            android:textColorHint="@color/n_white"
+            app:hintTextColor="@color/n_white"
+            app:cursorColor="@color/n_white"
+            app:passwordToggleTint="@color/n_white"
+            android:text="256"
+            android:textSize="20dp"
+            android:textColor="@color/n_white"
+            android:fontFamily="@font/pixel"
+            />
+
+        <TextView
+            android:id="@+id/b_ce"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/size_expre"
+            app:layout_constraintBottom_toBottomOf="@id/size_expre"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="20dp"
+            android:text="bits"
+            android:textColor="@color/n_white"
+            android:fontFamily="@font/pixel"
+            />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/edit_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/size"
+            app:layout_constraintTop_toTopOf="@id/b_ce"
+            app:layout_constraintBottom_toBottomOf="@id/b_ce"
+            app:layout_constraintStart_toEndOf="@id/b_ce"
+            android:layout_marginStart="10dp"
+            />
+
+        <!--seleccion de la cantidad de iteraciones-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/iter_gloabl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/edit_size"
+            app:layout_constraintBottom_toTopOf="@id/back_salt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            >
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/iter_back"
+                android:layout_width="120dp"
+                android:layout_height="60dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:boxStrokeColor="@color/style_edit_text"
+                android:textColorHint="@color/n_white"
+                app:hintTextColor="@color/n_white"
+                app:cursorColor="@color/n_white"
+                app:passwordToggleTint="@color/n_white"
+                >
+
+                <EditText
+                    android:id="@+id/input_iter"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Iterations"
+                    android:textColorHint="@color/n_white"
+                    android:textColor="@color/n_white"
+                    android:fontFamily="@font/pixel"
+                    android:maxLines="1"
+                    android:layout_marginEnd="18dp"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:textSize="18dp"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/error_iter"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@drawable/error_alert"
+                app:layout_constraintTop_toTopOf="@id/iter_back"
+                app:layout_constraintStart_toEndOf="@id/iter_back"
+                android:layout_marginStart="10dp"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iter_info"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            app:layout_constraintTop_toTopOf="@id/iter_gloabl"
+            app:layout_constraintBottom_toBottomOf="@id/iter_gloabl"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iter_gloabl"
+            android:src="@drawable/info"
+            android:layout_marginEnd="10dp"
+            />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/back_salt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/iter_gloabl"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/copy_salt"
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="@drawable/corner_10_blue"
+            android:layout_marginBottom="20dp"
+            >
+            <TextView
+                android:id="@+id/salt_expre"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/pixel"
+                android:textSize="17dp"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/copy_salt"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:layout_constraintTop_toTopOf="@id/back_salt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/back_salt"
+            android:src="@drawable/copy"
+            />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/re_salt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/reset_blue"
+            app:layout_constraintTop_toBottomOf="@id/copy_salt"
+            app:layout_constraintBottom_toBottomOf="@id/back_salt"
+            app:layout_constraintEnd_toEndOf="@id/copy_salt"
+            app:layout_constraintStart_toStartOf="@id/copy_salt"
+            android:layout_marginTop="10dp"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

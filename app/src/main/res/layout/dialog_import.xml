@@ -9,7 +9,7 @@
         android:id="@+id/information"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/matrix"
+        android:fontFamily="@font/pixel"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,16 +34,16 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/pass_back"
-            android:layout_width="270dp"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="15dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             app:boxStrokeColor="@color/style_edit_text"
             android:textColorHint="@color/design_default_color_surface"
             app:hintTextColor="@color/n_white"
@@ -53,7 +53,7 @@
 
             <EditText
                 android:id="@+id/input_pass"
-                android:layout_width="270dp"
+                android:layout_width="220dp"
                 android:layout_height="wrap_content"
                 android:hint="password"
                 android:fontFamily="monospace"
@@ -66,7 +66,7 @@
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress"
-            android:layout_width="260dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/pass_back"
             app:layout_constraintEnd_toEndOf="parent"
@@ -77,41 +77,34 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.appcompat.widget.AppCompatCheckBox
-        android:id="@+id/my_check"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/all"
-        android:text="Use my password"
-        android:fontFamily="monospace"
-        android:layout_marginTop="10dp"
-        />
-
-
-
-    <androidx.appcompat.widget.AppCompatButton
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/unlock_buttom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:background="@drawable/corner_25"
-        android:backgroundTint="@color/n_red"
-        app:layout_constraintTop_toBottomOf="@id/my_check"
+        android:backgroundTint="@color/b_black"
+        app:layout_constraintTop_toBottomOf="@id/all"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="10dp"
-        android:textSize="18dp"
-        android:textColor="@color/n_white"
-        android:fontFamily="monospace"
-        android:text="unlock"
-        android:textAllCaps="false"
-        />
+        android:layout_marginTop="20dp"
+        >
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:src="@drawable/desen_file"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/password_visibility"
-        android:layout_width="40dp"
-        android:layout_height="35dp"
+        android:layout_width="45dp"
+        android:layout_height="40dp"
         android:background="@drawable/corner_25"
         android:backgroundTint="@color/b_black"
         app:layout_constraintTop_toTopOf="@id/all"

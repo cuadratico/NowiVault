@@ -1,1 +1,1 @@
-A digital vault where you can store your passwords.
+Хранилище для надежного локального хранения вашей информации. Полная защита от вторжений.

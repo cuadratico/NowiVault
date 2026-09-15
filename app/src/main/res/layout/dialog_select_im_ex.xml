@@ -8,11 +8,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/matrix"
+        android:fontFamily="@font/pixel"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/all"
+        app:layout_constraintBottom_toTopOf="@id/all_exporting"
         android:layout_marginBottom="20dp"
         android:maxWidth="300dp"
         android:text="What do you want to do"
@@ -20,64 +20,65 @@
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/all"
-        android:layout_width="200dp"
-        android:layout_height="100dp"
+        android:id="@+id/all_exporting"
+        android:layout_width="150dp"
+        android:layout_height="70dp"
         android:background="@drawable/corner_25"
         android:backgroundTint="@color/b_black"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/create_new_a"
         >
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/export_archive"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:background="@drawable/corner_25"
-            android:backgroundTint="@color/n_red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/export_archive"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/import_archive"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/import_archive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/import_archive"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="20dp"
-            >
+            app:layout_constraintEnd_toStartOf="@id/export_archive"
+            />
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/export_archive"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/import_archive"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:background="@drawable/corner_25"
-            android:backgroundTint="@color/n_red"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/create_new_a"
+        android:layout_width="75dp"
+        android:layout_height="70dp"
+        android:background="@drawable/corner_25"
+        android:backgroundTint="@color/b_black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/all_exporting"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginEnd="20dp"
+        >
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="20dp"
-            >
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/import_archive"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            android:src="@drawable/create_file"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

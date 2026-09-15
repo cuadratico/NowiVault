@@ -1,98 +1,56 @@
 package com.nothingsecure
 
+import android.content.ContentValues
 import android.content.Context
+import android.content.SharedPreferences
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 
-data class register (val id: Int, var time: String, val information: String, val color: String, val iv: String)
-data class pass (val id: Int, var pass: String, var information: String, var iv: String)
+
+data class data_extract_list (val id: Int, val data: String, val iv: String)
 
 class db (context: Context): SQLiteOpenHelper(context, "information.db", null, 1){
     override fun onCreate(db: SQLiteDatabase?) {
-
-        db?.execSQL("CREATE TABLE time_register (id INTEGER PRIMARY KEY AUTOINCREMENT, time TEXT, information TEXT, color TEXT, iv TEXT)")
-        db?.execSQL("CREATE TABLE pass (id INTEGER PRIMARY KEY AUTOINCREMENT, pass TEXT, information TEXT, iv TEXT)")
+        db?.execSQL("CREATE TABLE info_r (id INTEGER PRIMARY KEY AUTOINCREMENT, global_time TEXT, iv TEXT)")
+        db?.execSQL("CREATE TABLE info_s (id INTEGER PRIMARY KEY AUTOINCREMENT, global_pass TEXT, iv TEXT)")
     }
-
     override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {}
 
-    val db = this.writableDatabase
+    fun insert (pref: SharedPreferences, table_name: String, values: ContentValues): Long {
+        val db = this.writableDatabase
+        pref.edit().putBoolean(table_name + "_full", true).commit()
 
-    // time_register db
-
-    fun add_register (time: String, information: String, color: String, iv: String) {
-
-        db.execSQL("INSERT INTO time_register (time, information, color, iv) VALUES (?, ?, ?, ?)", arrayOf(time, information, color, iv))
-
+        return db.insert(table_name, null, values)
     }
 
-    fun delete_register (all: Boolean, id: Int = 0): Boolean {
+    fun update (table_name: String, values: ContentValues, id: String) {
+        val db = this.writableDatabase
 
-        if (all) {
-            db.execSQL("DELETE FROM time_register")
-        }else {
-            db.execSQL("DELETE FROM time_register WHERE id = ?", arrayOf(id))
-        }
-
-        return true
+        db.update(table_name, values, "id = ?", arrayOf(id))
     }
 
-    fun select_register (): Boolean {
-        val db_read = this.readableDatabase
-        val query = db_read.rawQuery("SELECT * FROM time_register", null, null)
+    fun delete (table_name: String, argument: String? = null, values: Array<String>? = null) {
+        val db = this.writableDatabase
 
-        fun add () {
-            register_list = register_list.plus(register(query.getInt(0), query.getString(1), query.getString(2), query.getString(3), query.getString(4)))
-        }
-
-        if (query.moveToFirst()) {
-            add()
-
-            while (query.moveToNext()) {
-                add()
-            }
-            register_list = register_list.reversed()
-            return true
-        }else {
-            return false
-        }
-
+        db.delete(table_name, argument, values)
     }
 
+    fun select (table_name: String): List<data_extract_list> {
 
-    // pass db
+        val db = this.readableDatabase
+        val query = db.query(table_name, null, null, null, null, null, null)
 
-    fun add_pass (pass: String, information: String, iv: String) {
+        var extract_list = listOf<data_extract_list>()
 
-        db.execSQL("INSERT INTO pass (pass, information, iv) VALUES (?, ?, ?)", arrayOf(pass, information, iv))
-
-    }
-
-
-    fun delete_pass (id: Int): Boolean {
-
-        db.execSQL("DELETE FROM pass WHERE id = ?", arrayOf(id))
-
-        return true
-
-    }
-
-    fun delete_speci (id_ini: Int, id_final: Int) {
-        db.execSQL("DELETE FROM pass WHERE id BETWEEN ? AND ?", arrayOf(id_ini, id_final))
-    }
-
-    fun update_pass (id: Int, pass: String, information: String, iv: String){
-
-        db.execSQL("UPDATE pass SET pass = ?, information = ?, iv = ? WHERE id = ?", arrayOf(pass, information, iv, id))
-    }
-
-    fun select_pass ():Boolean {
-        val db_read = this.readableDatabase
-        val query = db_read.rawQuery("SELECT * FROM pass", null, null)
-
-        fun add () {
-            pass_list = pass_list.plus(pass(query.getInt(0), query.getString(1), query.getString(2), query.getString(3)))
+        fun add() {
+            extract_list = extract_list.plus(
+                data_extract_list(
+                    query.getInt(0),
+                    query.getString(1),
+                    query.getString(2)
+                )
+            )
         }
 
         if (query.moveToFirst()) {
@@ -100,29 +58,8 @@ class db (context: Context): SQLiteOpenHelper(context, "information.db", null, 1
             while (query.moveToNext()) {
                 add()
             }
-            return true
-        }else {
-            return false
         }
-    }
-
-    fun delete_prin() {
-        val db = this.writableDatabase
-
-        db.execSQL("DELETE FROM pass")
-    }
-
-    fun delete_all () {
-        val db = this.writableDatabase
-
-        db.execSQL("DELETE FROM pass")
-        db.execSQL("DELETE FROM time_register")
-
-    }
-
-    companion object {
-        var register_list = listOf<register>()
-        var pass_list = listOf<pass>()
+        return extract_list
     }
 
 }

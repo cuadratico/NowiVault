@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="30dp"
-        android:fontFamily="@font/matrix"
+        android:fontFamily="@font/pixel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/progress"
@@ -18,7 +18,7 @@
         android:textColor="@color/white"
         />
 
-    <ProgressBar
+    <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/progress"
         android:layout_width="100dp"
         android:layout_height="100dp"
@@ -26,6 +26,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/load"
         />
 
     <TextView
@@ -35,7 +38,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/progress"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:fontFamily="monospace"
+        android:fontFamily="@font/pixel"
         android:textSize="20dp"
         android:text="Don't close the app"
         android:textColor="@color/white"

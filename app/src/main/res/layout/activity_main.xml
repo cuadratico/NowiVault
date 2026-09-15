@@ -10,96 +10,108 @@
     >
 
 
-
-
-    <View
-        android:id="@+id/color_modofy_part"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@drawable/corner_25"
-        android:backgroundTint="#264653"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/recy"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        />
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/confi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/setting"
-        app:layout_constraintTop_toTopOf="@id/search"
-        app:layout_constraintBottom_toBottomOf="@id/search"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="10dp"
-        />
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/multi_funtion_bot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/delete_all"
-        app:layout_constraintTop_toTopOf="@id/confi"
-        app:layout_constraintBottom_toBottomOf="@id/confi"
-        app:layout_constraintStart_toEndOf="@id/confi"
-        android:layout_marginStart="20dp"
-        />
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/im_ex"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/bidirection_arrows"
-        app:layout_constraintTop_toTopOf="@id/multi_funtion_bot"
-        app:layout_constraintBottom_toBottomOf="@id/multi_funtion_bot"
-        app:layout_constraintStart_toEndOf="@id/multi_funtion_bot"
-        android:layout_marginStart="20dp"
-        />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recy"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/add"
-        app:layout_constraintTop_toBottomOf="@id/search"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="match_parent"
+        android:paddingBottom="100dp"
+        android:paddingTop="70dp"
+        android:clipToPadding="false"
         />
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/back_b"
-        android:layout_width="60dp"
+        android:id="@+id/color_modofy_part"
+        android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@drawable/corner_25"
-        android:backgroundTint="@color/n_white"
-        app:layout_constraintBottom_toTopOf="@id/add"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="10dp"
+        android:backgroundTint="#264653"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         >
 
         <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/confi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@drawable/setting"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="10dp"
+            />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/multi_funtion_bot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/delete_all"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/confi"
+            android:layout_marginStart="20dp"
+            />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/im_ex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/bidirection_arrows"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/multi_funtion_bot"
+            android:layout_marginStart="20dp"
+            />
+
+        <SearchView
+            android:id="@+id/search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="10dp"
+            android:maxWidth="250dp"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/multi_options_archive"
+        android:layout_width="80dp"
+        android:layout_height="55dp"
+        android:background="@drawable/corner_20_black"
+        app:layout_constraintTop_toTopOf="@id/back_fun_bot"
+        app:layout_constraintBottom_toBottomOf="@id/back_fun_bot"
+        app:layout_constraintStart_toEndOf="@id/back_fun_bot"
+        app:layout_constraintEnd_toEndOf="parent"
+        >
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/arrow_image"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:src="@drawable/arrow_l"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/archive_image"
             />
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <SearchView
-        android:id="@+id/search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:maxWidth="250dp"
-        />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/archive_image"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/save_archive"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/arrow_image"
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/info_exist"
@@ -109,9 +121,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:fontFamily="@font/matrix"
+        android:fontFamily="@font/pixel"
         android:textSize="30dp"
-        android:text="You have not added any passwords yet"
+        android:text="You don't have passwords on your file"
         android:gravity="center"
         />
 
@@ -129,88 +141,85 @@
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/add"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:background="@drawable/corner_25"
-        android:backgroundTint="@color/n_red"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/back_fun_bot"
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
+        android:background="@drawable/corner_20_black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="20dp"
         >
 
         <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/add"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/generator"
+            app:layout_constraintStart_toEndOf="@id/logs_history"
+            android:layout_marginStart="20dp"
             />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/logs_history"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:background="@drawable/corner_25"
-        android:backgroundTint="@color/b_black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/add"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="20dp"
-        >
-
         <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/logs_history"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/logs_history"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/add"
             app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="20dp"
             />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/time_out"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/logs_history"
-        app:layout_constraintBottom_toBottomOf="@id/logs_history"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/logs_history"
-        android:textColor="@color/n_red"
-        android:textSize="19dp"
-        android:fontFamily="monospace"
-        />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/generator"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:background="@drawable/corner_25"
-        android:backgroundTint="@color/b_black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/add"
-        android:layout_marginBottom="20dp"
-        >
 
         <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/view_generator"
+            android:id="@+id/generator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/generator"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/add"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/time_out_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/back_fun_bot"
+        app:layout_constraintBottom_toBottomOf="@id/back_fun_bot"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/back_fun_bot"
+        android:background="@drawable/corner_20_black"
+        >
+
+        <TextView
+            android:id="@+id/time_out"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textColor="@color/n_blue"
+            android:textSize="19dp"
+            android:fontFamily="monospace"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
