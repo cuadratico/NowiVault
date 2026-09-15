@@ -4,7 +4,8 @@
 
 | Version | Supported          |
 | ------- | ------------------ |
-|  0.3.20-Diablo-III | :white_check_mark: |
+|  1.3.21-Nikola_Tesla | :white_check_mark: |
+|  0.3.20-Diablo-III | :x: |
 |  0.3.19-Stardew_Valley.2 | :x: |
 |  0.3.19-Stardew_Valley.1 | :x: |
 |  0.3.19-Stardew_Valley | :x: |
