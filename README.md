@@ -1,4 +1,6 @@
- 
+# Important
+🚨 The architecture of NowiVault has completely changed compared to the previous version (NothingK); therefore, to ensure compatibility, you will need to: export your passwords from NothingK -> delete the app -> install NowiVault -> re-import them without issues. 🚨
+
 # README with technical explanations in development...
 
 # How can I report a bug in NowiVault?
