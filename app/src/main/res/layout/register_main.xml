@@ -10,6 +10,30 @@
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/very_apk"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:backgroundTint="@color/b_black"
+        android:background="@drawable/corner_25"
+        app:layout_constraintTop_toBottomOf="@id/back_derive"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"
+        >
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:src="@drawable/very_apk"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bio_global"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

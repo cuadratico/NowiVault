@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
+import kotlin.time.Duration
 
 fun biometric_auto (context: FragmentActivity, succeded: () -> Unit, error: () -> Unit, title: String = "Authenticate yourself") {
 

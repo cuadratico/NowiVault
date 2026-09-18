@@ -1,7 +1,9 @@
 package com.nothingsecure
 
 import android.annotation.SuppressLint
+import android.app.ComponentCaller
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -13,6 +15,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
@@ -58,6 +61,7 @@ import kotlinx.coroutines.withContext
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.Base64
+import java.util.HexFormat
 import javax.crypto.KeyGenerator
 import kotlin.random.Random
 import kotlin.toString
@@ -66,6 +70,9 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
     private var sensor_manager: SensorManager? = null
     private lateinit var pref: SharedPreferences
     private var destroy: Boolean = true
+    private var pause: Boolean = false
+    private var hash_to_calculate: String? = null
+    private lateinit var hash_dialog: Dialog
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,6 +105,7 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
         val back_derived = findViewById<ConstraintLayout>(R.id.back_derive)
         val derived_check = findViewById<CheckBox>(R.id.derived_check)
         val info_derived = findViewById<ShapeableImageView>(R.id.info_derived)
+        val very_apk = findViewById<ConstraintLayout>(R.id.very_apk)
 
 
         pref = EncryptedSharedPreferences.create(this, "ap",
@@ -436,6 +444,37 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
             }
         }
 
+        very_apk.setOnClickListener {
+            hash_dialog = Dialog(this)
+            val view_hash = create_dialog(this, R.layout.very_apk, hash_dialog)
+
+            val input_hash = view_hash.findViewById<EditText>(R.id.input_hash)
+            val file_hahs = view_hash.findViewById<ShapeableImageView>(R.id.file_hash)
+
+            file_hahs.setOnClickListener {
+                if (input_hash.text.isEmpty() || Regex(".*sha.*").matches(input_hash.text.toString().lowercase())) {
+                    Toast.makeText(this, "The hash you specified is invalid", Toast.LENGTH_SHORT).show()
+                } else {
+                    pause = true
+                    hash_to_calculate = input_hash.text.toString()
+                    startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/vnd.android.package-archive"
+                    }, 1000)
+                }
+            }
+
+            hash_dialog.setOnDismissListener(object: DialogInterface.OnDismissListener {
+                override fun onDismiss(p0: DialogInterface?) {
+                    hash_to_calculate = null
+                }
+
+            })
+
+            create_material_dialog(this, "APK Verifier?", "This APK checker lets you know if the hash you specify matches that of the APK you upload directly from NowiVault. The hash must be calculated using the \"SHA256\" algorithm, and only the hexadecimal representation should be provided.", "", "", {}, {})
+
+        }
+
         derived_check.setOnCheckedChangeListener(object: CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(p0: CompoundButton, check: Boolean) {
                 if (check) {
@@ -498,7 +537,10 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onPause() {
         super.onPause()
-        finish()
+        if (!pause) {
+            finish()
+        }
+        pause = true
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
@@ -513,4 +555,55 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
             z_regi = event.values[2]
         }
     }
+
+    @ExperimentalStdlibApi
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        caller: ComponentCaller
+    ) {
+        super.onActivityResult(requestCode, resultCode, data, caller)
+
+        val query = contentResolver.query(data?.data!!, null, null, null, null)
+
+        if (requestCode == 1000 && query!!.moveToFirst()) {
+
+            val body = contentResolver.openInputStream(data.data!!).use { file ->
+                file?.readBytes()
+            }
+
+            hash_dialog.dismiss()
+
+            val (load_dialog, load_text) = load("Calculating the Hash", this)
+
+            suspend fun last_calculate (info_match: String = "The hashes have matched", icon: Int = R.drawable.match) {
+                withContext(Dispatchers.Main) {
+                    load_dialog.dismiss()
+
+                    val info_dialog = Dialog(this@RegisterActivity)
+                    val view_dialog = create_dialog(this@RegisterActivity, R.layout.alert_dialog, info_dialog)
+
+                    val text_info = view_dialog.findViewById<TextView>(R.id.alert_text)
+                    val view_info = view_dialog.findViewById<ShapeableImageView>(R.id.alert_view)
+
+                    text_info.text = info_match
+                    view_info.setImageResource(icon)
+
+                }
+            }
+
+            lifecycleScope.launch (Dispatchers.IO){
+                if (MessageDigest.isEqual(MessageDigest.getInstance("SHA256").digest(body), hash_to_calculate!!.hexToByteArray())) {
+                    last_calculate()
+                } else {
+                    last_calculate("The hash did not match", R.drawable.no_match)
+                }
+            }
+
+        } else {
+            Toast.makeText(this, "No file has been selected", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 }

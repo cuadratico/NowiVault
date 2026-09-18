@@ -1,1 +1,1 @@
-A vault to securely store your information locally. Zero intrusions.
+Хранилище для надежного локального хранения вашей информации. Полная защита от вторжений.

@@ -12,7 +12,6 @@ import com.nothingsecure.R
 import com.nothingsecure.configuration_tools.icons_list
 
 
-// continuar con la realizacion de los holders (poco a poco, en base al momento que los necesite)
 class pass_holder(view: View): holder_global(view){
 
     val all_cl = view.findViewById<ConstraintLayout>(R.id.all)

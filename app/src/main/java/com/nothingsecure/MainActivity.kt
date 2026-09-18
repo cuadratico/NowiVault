@@ -1024,7 +1024,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 val name = query.getString(position)
 
                 val nk_very = name.matches(Regex(".*nk.*"))
-                Log.e("extension", nk_very.toString())
 
                 if (!name.matches(Regex(".*ns.*")) && !nk_very) {
                     Toast.makeText(this, "The extension is incorrect", Toast.LENGTH_SHORT).show()

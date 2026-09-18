@@ -11,8 +11,8 @@ android {
         applicationId = "com.nothingsecure"
         minSdk = 29
         targetSdk = 36
-        versionCode = 34
-        versionName = "1.3.21-Nikola_Tesla"
+        versionCode = 35
+        versionName = "1.3.22-Nikola_Tesla_B"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -20,12 +20,18 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            isShrinkResources = true
+
+            optimization {
+                enable = true
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
