@@ -1,10 +1,7 @@
 package com.nothingsecure
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.ComponentCaller
 import android.app.Dialog
-import android.app.Instrumentation
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
@@ -17,20 +14,18 @@ import android.os.Bundle
 import android.provider.Settings
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
+import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.component1
 import androidx.activity.result.component2
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
@@ -41,35 +36,37 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.textfield.TextInputLayout
 import com.nothingsecure.funs_extra.add_register
+import com.nothingsecure.funs_extra.alias_k_s
 import com.nothingsecure.funs_extra.biometric_auto
 import com.nothingsecure.funs_extra.create_dialog
 import com.nothingsecure.funs_extra.create_material_dialog
 import com.nothingsecure.funs_extra.destroy_info
 import com.nothingsecure.funs_extra.entropy
 import com.nothingsecure.funs_extra.force
+import com.nothingsecure.funs_extra.idioms_instance
 import com.nothingsecure.funs_extra.key_conf_dialog
 import com.nothingsecure.funs_extra.load
 import com.nothingsecure.funs_extra.pass_generator_dialog
+import com.nothingsecure.funs_extra.rege
 import com.nothingsecure.funs_extra.text_load_change
+import com.nothingsecure.funs_extra.very_expre
 import com.nothingsecure.funs_extra.vibra_conf
 import com.nothingsecure.funs_extra.visibility
 import com.nothingsecure.funs_extra.x_regi
 import com.nothingsecure.funs_extra.y_regi
 import com.nothingsecure.funs_extra.z_regi
-import com.nothingsecure.recy_information.project_class
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.Base64
-import java.util.HexFormat
 import javax.crypto.KeyGenerator
 import kotlin.random.Random
 import kotlin.toString
@@ -79,14 +76,19 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var pref: SharedPreferences
     private var destroy: Boolean = true
     private var pause: Boolean = false
-    private var hash_to_calculate: String? = null
+    private var hash_to_calculate: ByteArray? = null
     private lateinit var hash_dialog: Dialog
+
+    private lateinit var r_a_idioms: idioms_instance
+    private lateinit var extra_idioms: idioms_instance
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.register_main)
+
+        val lan_change = findViewById<ConstraintLayout>(R.id.id_change)
 
         val bio_global = findViewById<ConstraintLayout>(R.id.bio_global)
         val info_bio = findViewById<ShapeableImageView>(R.id.info_bio)
@@ -115,29 +117,43 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
         val info_derived = findViewById<ShapeableImageView>(R.id.info_derived)
         val very_apk = findViewById<ConstraintLayout>(R.id.very_apk)
 
+        val bio_error = findViewById<ShapeableImageView>(R.id.bio_error)
 
-        pref = EncryptedSharedPreferences.create(this, "ap",
+
+        pref = EncryptedSharedPreferences.create(
+            this,
+            "ap",
             MasterKey.Builder(this).apply {
                 setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            }.build()
-            , EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+            }.build(),
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+
+        r_a_idioms = idioms_instance(pref, 1)
+        extra_idioms = idioms_instance(pref, 0)
+
 
         if (!pref.getBoolean("d_v_h", false)) {
             back_salt.visibility = View.GONE
             back_iter.visibility = View.GONE
         }
+        derived_check.text = r_a_idioms.select_idiom(23)
 
-        if (BiometricManager.from(this).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL) != BiometricManager.BIOMETRIC_SUCCESS) {
-            back_global.visibility = View.VISIBLE
-
-            bio_global.visibility = View.VISIBLE
+        if (BiometricManager.from(this).canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL) != BiometricManager.BIOMETRIC_SUCCESS) {
+            back_global.visibility = View.GONE
+            very_apk.visibility = View.GONE
         } else {
             bio_global.visibility = View.GONE
         }
 
+        if (BiometricManager.from(this).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS) {
+            bio_error.visibility = View.GONE
+        }
+
         info_bio.setOnClickListener {
-            create_material_dialog(this, "Why can't I log in?", "To use NowiVault and for your security, you need to create a biometric profile.\n" + "To do this, go to settings and use your password to set up a biometric data profile", "Go to settings", "Ok",
+            create_material_dialog(this,
+                r_a_idioms.select_idiom(0), r_a_idioms.select_idiom(1), r_a_idioms.select_idiom(2), extra_idioms.select_idiom(3),
                 {
                     startActivity(Intent(Settings.ACTION_SETTINGS))
             }, {})
@@ -178,7 +194,6 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
             back_derived.visibility = View.GONE
             pass_gen.visibility = View.GONE
 
-            information.text = "Put your password"
             if (!pref.getBoolean("log_very", false)) {
                 create.visibility = View.GONE
             }
@@ -188,19 +203,45 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
             back_derived.visibility = View.VISIBLE
         }
 
+
         if (pref.getBoolean("close", false)) {
             pref.edit().putBoolean("close", false).commit()
             info_close.setImageResource(R.drawable.fall)
+            information.text = r_a_idioms.select_idiom(5)
         }
 
-        fun alias_k_s (data: String): String {
-            return Base64.getEncoder().withoutPadding().encodeToString(MessageDigest.getInstance("SHA256").digest(data.toByteArray() + Base64.getDecoder().decode(pref.getString("s_k_c", ""))))
+        info_close.setOnClickListener {
+            create_material_dialog(
+                this,
+                "",
+                if (pref.getBoolean("close", false)) {
+                    r_a_idioms.select_idiom(6)
+                } else {
+                    r_a_idioms.select_idiom(7)
+                },
+                extra_idioms.select_idiom(3),
+                "",
+                {},
+                {}
+            )
         }
 
-        fun rege (salt: String, hash: String, value: String) {
-            pref.edit().putString(salt, Base64.getEncoder().withoutPadding().encodeToString(SecureRandom().generateSeed(16))).commit()
-            pref.edit().putString(hash, Base64.getEncoder().withoutPadding().encodeToString(MessageDigest.getInstance("SHA-256").digest(value.toByteArray() + Base64.getDecoder().decode(pref.getString(salt, ""))))).commit()
+        val lan_list = listOf("en", "es", "ru", "ch", "jp")
+        lan_change.setOnClickListener {
+            MaterialAlertDialogBuilder(this).apply {
+                setTitle("Choose a language")
+                setAdapter(ArrayAdapter(this@RegisterActivity, android.R.layout.simple_list_item_1, lan_list), object: DialogInterface.OnClickListener {
+                    override fun onClick(p0: DialogInterface?, posi: Int) {
+                        pref.edit().putString("idio", lan_list[posi]).commit()
+
+                        create_material_dialog(this@RegisterActivity, "", "The app needs to be restarted to change the language", "reset", "", {
+                            finishAffinity()
+                        }, {})
+                    }
+                })
+            }.show()
         }
+
 
         fun empty_all () {
             input_pass.text.clear()
@@ -212,34 +253,11 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
 
         val db = db(this)
 
-        fun down_opor () {
-            add_register(pref, db, "Login failed", "#aa4040")
-            empty_all()
-
-            pref.edit().putInt("opor", pref.getInt("opor", 9) - 1).commit()
-
-            if (pref.getInt("opor", 9) == 0) {
-                opor.text = ""
-                pref.edit().putBoolean("block", true).commit()
-                block_mode()
-            } else {
-                opor.text = " *".repeat(pref.getInt("opor", 0))
-            }
-        }
-
         fun fin () {
             destroy = false
-            add_register(pref, db, "Successful login", "#40aa47")
-            startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
+            add_register(pref, db, r_a_idioms.select_idiom(8), "#40aa47")
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
-        }
-
-        fun very_hash (pref: SharedPreferences, value: String, salt: String, hash: String): Boolean {
-            if (MessageDigest.isEqual(Base64.getDecoder().decode(pref.getString(hash, "")), MessageDigest.getInstance("SHA256").digest(value.toByteArray() + Base64.getDecoder().decode(pref.getString(salt, ""))))) {
-                return true
-            } else {
-                return false
-            }
         }
 
         fun very_pass () {
@@ -258,57 +276,32 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
 
             })
 
-            biometric_auto(this,  {
+             biometric_auto(this,  {
+                 val iter_total = (if (pref.getBoolean("d_v_h", false)) { input_iter.text.toString() } else { 0 }).toString().toByteArray()
 
-                val (load_dialog, info_load) = load("Authenticating your key", this@RegisterActivity)
+                 very_expre(this, db, pref, opor, (input_pass.text.toString() + input_salt.text.toString() + String(iter_total) ), "t_h", "t_s", {
 
-                lifecycleScope.launch {
-                    delay(200)
+                     rege(pref, "t_s", "t_h", (input_pass.text.toString() + input_salt.text.toString() + String(iter_total) ))
+                     iter_total.fill(0)
 
-                    if (very_hash(pref, withContext(Dispatchers.Main) { input_pass.text.toString() }, "k_s", "k_h")) {
+                     if (pref.getBoolean("d_v_h", false)) {
 
-                        if (pref.getBoolean("d_v_h", false)) {
-                            if (very_hash(pref, withContext(Dispatchers.Main) { input_salt.text.toString() }, "s_s", "s_h") && very_hash(pref, withContext(Dispatchers.Main) { input_iter.text.toString() }, "i_s", "i_h")) {
-                                rege("s_s", "s_h", withContext(Dispatchers.Main) { input_salt.text.toString() })
-                                rege("i_s", "i_h", withContext(Dispatchers.Main) { input_iter.text.toString() })
-                            } else {
-                                withContext(Dispatchers.Main) {
-                                    load_dialog.dismiss()
-                                    down_opor()
-                                }
-                                cancel()
-                            }
-                        }
+                         pref.edit().putString("salt_def", input_salt.text.toString()).commit()
+                         pref.edit().putInt("it_def", input_iter.text.toString().toInt()).commit()
 
-                        rege("k_s", "k_h", withContext(Dispatchers.Main) { input_pass.text.toString() })
-                        pref.edit().putString("key_u", alias_k_s(withContext(Dispatchers.Main) { input_pass.text.toString() })).commit()
+                     }
 
-                        withContext(Dispatchers.Main) {
+                     alias_k_s(pref, input_pass.text.toString())
 
-                            if (pref.getBoolean("d_v_h", false)) {
-                                pref.edit().putString("salt_def", input_salt.text.toString()).commit()
-                                pref.edit().putInt("it_def", input_iter.text.toString().toInt()).commit()
-                            }
+                     if (pref.getBoolean("log_very", false)) {
+                         create.startAnimation(animation)
+                     } else {
+                         fin()
+                     }
 
-                            if (pref.getBoolean("log_very", false)) {
-                                create.startAnimation(animation)
-                            } else {
-                                fin()
-                            }
-                        }
+                 },{})
 
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            down_opor()
-                        }
-                    }
-
-                    withContext(Dispatchers.Main) {
-                        empty_all()
-                        load_dialog.dismiss()
-                    }
-
-                }
+                empty_all()
 
             }, {
                 empty_all()
@@ -326,131 +319,134 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
 
 
         create.setOnClickListener {
-            if (input_pass.text!!.isNotEmpty()) {
-                if (pref.getBoolean("log_very", false)) {
-                    very_pass()
-                } else {
-                    if (input_pass.text!!.length >= 8) {
+            if (input_pass.text!!.isEmpty()) {
+                Toast.makeText(this, r_a_idioms.select_idiom(13), Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-                        key_conf_dialog(this, pref, derived_check.isChecked) { algo_expre, size_expre, input_iter, salt_expre ->
+            if (pref.getBoolean("log_very", false)) {
+                if (pref.getBoolean("d_v_h", false) && (input_salt.text.isEmpty() || input_iter.text.isEmpty())) {
+                    return@setOnClickListener
+                }
+                very_pass()
+            } else {
 
-                            biometric_auto(this@RegisterActivity,  {
+                if (input_pass.text!!.length < 8) {
+                    Toast.makeText(this, r_a_idioms.select_idiom(12), Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
 
-                                val (load, load_info) = load("Creating the cryptographic key", this@RegisterActivity)
+                key_conf_dialog(this, pref, derived_check.isChecked) { algo_expre, size_expre, input_iter, salt_expre ->
 
-                                animation.setAnimationListener(object : Animation.AnimationListener {
-                                    override fun onAnimationEnd(ani: Animation?) {
-                                        create.visibility = View.INVISIBLE
-                                        load.dismiss()
-                                        fin()
-                                    }
+                    biometric_auto(this, {
 
-                                    override fun onAnimationRepeat(p0: Animation?) {}
+                        val (load, load_info) = load(this, pref)
 
-                                    override fun onAnimationStart(p0: Animation?) {
-                                        create.isEnabled = false
-                                    }
+                        animation.setAnimationListener(object : Animation.AnimationListener {
+                            override fun onAnimationEnd(ani: Animation?) {
+                                create.visibility = View.INVISIBLE
+                                load.dismiss()
+                                fin()
+                            }
 
-                                })
+                            override fun onAnimationRepeat(p0: Animation?) {}
 
-                                val bool_check = derived_check.isChecked
+                            override fun onAnimationStart(p0: Animation?) {
+                                create.isEnabled = false
+                            }
 
-                                lifecycleScope.launch (Dispatchers.IO){
-                                    rege("k_s", "k_h", withContext(Dispatchers.Main) { input_pass.text.toString() })
-                                    pref.edit().putString("s_k_c", Base64.getEncoder().withoutPadding().encodeToString(SecureRandom().generateSeed(16))).commit()
-                                    pref.edit().putString("key_u", alias_k_s(withContext(Dispatchers.Main) { input_pass.text.toString() })).commit()
-                                    pref.edit().putInt("size", input_pass.text.length).commit()
+                        })
 
-                                    if (!bool_check) {
-                                        KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore").apply {
-                                            init(
-                                                KeyGenParameterSpec.Builder(pref.getString("key_u", "").toString(), KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT).apply {
-                                                    setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                                                    setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-                                                    setKeySize(size_expre.text.toString().toInt())
-                                                    setUserAuthenticationRequired(true)
-                                                    setUserAuthenticationValidityDurationSeconds(5)
+                        val bool_check = derived_check.isChecked
 
-                                                    if (packageManager.hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE)) {
-                                                        setIsStrongBoxBacked(true)
-                                                    }
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            text_load_change(pref, load_info, r_a_idioms.select_idiom(11))
 
-                                                }.build()
-                                            )
-                                        }.generateKey()
+                            pref.edit().putString("s_k_c", Base64.getEncoder().withoutPadding().encodeToString(SecureRandom().generateSeed(16))).commit()
+                            alias_k_s(pref, withContext(Dispatchers.Main) { input_pass.text.toString() })
+                            pref.edit().putInt("size", input_pass.text.length).commit()
 
-                                    } else {
+                            if (!bool_check) {
+                                KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore").apply {
+                                    init(
+                                        KeyGenParameterSpec.Builder(pref.getString("k_u", "").toString(), KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT).apply {
+                                            setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                                            setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                                            setKeySize(size_expre.text.toString().toInt())
+                                            setUserAuthenticationRequired(true)
+                                            setUserAuthenticationValidityDurationSeconds(5)
 
-                                        pref.edit().putBoolean("deri", true).commit()
-
-                                        withContext(Dispatchers.Main) {
-                                            if (input_iter.text.toString().toInt() < 600000) {
-                                                input_iter.setText("600000")
+                                            if (packageManager.hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE)) {
+                                                setIsStrongBoxBacked(true)
                                             }
-                                        }
 
-                                        if (pref.getBoolean("d_v_h", false)) {
-                                            rege("s_s", "s_h", withContext(Dispatchers.Main) { salt_expre.text.toString() })
-                                            rege("i_s", "i_h", withContext(Dispatchers.Main) { input_iter.text.toString() })
+                                        }.build()
+                                    )
+                                }.generateKey()
 
-                                            pref.edit().putString("salt_def", withContext(Dispatchers.Main) { salt_expre.text.toString() }).commit()
+                            } else {
 
-                                        } else {
-                                            pref.edit().putString("salt_def", Base64.getEncoder().withoutPadding().encodeToString(SecureRandom().generateSeed(16))).commit()
-                                        }
+                                pref.edit().putBoolean("deri", true).commit()
 
-                                        withContext(Dispatchers.Main) {
-                                            pref.edit().putInt("k_le", size_expre.text.toString().toInt()).commit()
-                                            pref.edit().putInt("it_def", input_iter.text.toString().toInt()).commit()
-                                            pref.edit().putString("algo", algo_expre.text.toString()).commit()
-                                        }
-                                    }
-
-
-                                    withContext(Dispatchers.Main) {
-                                        input_pass.text.clear()
-                                        text_load_change(load_info, "Creating the log key")
-                                    }
-
-                                    pref.edit().putString("key_l", String(Random.nextBytes(8))).commit()
-
-                                    KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore").apply {
-                                        init(
-                                            KeyGenParameterSpec.Builder(pref.getString("key_l", "").toString(), KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT).apply {
-                                                setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                                                setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-
-                                                if (packageManager.hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE)) {
-                                                    setIsStrongBoxBacked(true)
-                                                }
-                                            }.build()
-                                        )
-
-                                    }.generateKey()
-
-                                    pref.edit().putBoolean("start", true).commit()
-                                    pref.edit().putBoolean("log_very", true).commit()
-                                    vibra_conf(this@RegisterActivity, pref, longArrayOf(0, 100, 0, 100))
-
-                                    withContext(Dispatchers.Main) {
-                                        create.startAnimation(animation)
+                                withContext(Dispatchers.Main) {
+                                    if (input_iter.text.toString().toInt() < 600000) {
+                                        input_iter.setText("600000")
                                     }
                                 }
 
-                            }, {
-                                empty_all()
-                                pref.edit().clear().commit()
-                            })
+                                if (pref.getBoolean("d_v_h", false)) {
+                                    pref.edit().putString("salt_def", withContext(Dispatchers.Main) { salt_expre.text.toString() }).commit()
+                                } else {
+                                    pref.edit().putString("salt_def", Base64.getEncoder().withoutPadding().encodeToString(SecureRandom().generateSeed(16))).commit()
+                                }
 
+                                withContext(Dispatchers.Main) {
+                                    pref.edit().putInt("k_le", size_expre.text.toString().toInt()).commit()
+                                    pref.edit().putInt("it_def", input_iter.text.toString().toInt()).commit()
+                                    pref.edit().putString("algo", algo_expre.text.toString()).commit()
+                                }
+                            }
+
+                            rege(pref, "t_s", "t_h", withContext(Dispatchers.Main) { (input_pass.text.toString() + pref.getString("salt_def", "") + pref.getInt("it_def", 0).toString()) })
+
+
+                            withContext(Dispatchers.Main) {
+                                input_pass.text.clear()
+                                text_load_change(pref, load_info, r_a_idioms.select_idiom(11))
+                            }
+
+                            pref.edit().putString("key_l", String(Random.nextBytes(8))).commit()
+
+                            KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore").apply {
+                                init(KeyGenParameterSpec.Builder(pref.getString("key_l", "").toString(), KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT).apply {
+                                        setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                                        setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+
+                                        if (packageManager.hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE)) {
+                                            setIsStrongBoxBacked(true)
+                                        }
+                                    }.build()
+                                )
+
+                            }.generateKey()
+
+                            pref.edit().putBoolean("start", true).commit()
+                            pref.edit().putBoolean("log_very", true).commit()
+                            vibra_conf(this@RegisterActivity, pref, longArrayOf(0, 100, 0, 100))
+
+                            withContext(Dispatchers.Main) {
+                                create.startAnimation(animation)
+                            }
                         }
-                    } else {
-                        Toast.makeText(this, "8 or more characters, please", Toast.LENGTH_SHORT).show()
-                    }
-                }
 
-            }else {
-                Toast.makeText(this, "There is no password to check", Toast.LENGTH_SHORT).show()
+                    }, {
+                        empty_all()
+                        pref.edit().clear().commit()
+                    })
+
+                }
             }
+
         }
 
         very_apk.setOnClickListener {
@@ -459,48 +455,52 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
 
             val input_hash = view_hash.findViewById<EditText>(R.id.input_hash)
             val file_hahs = view_hash.findViewById<ShapeableImageView>(R.id.file_hash)
+            val info_very = view_hash.findViewById<TextView>(R.id.info_very)
+
+            info_very.text = r_a_idioms.select_idiom(24)
 
             file_hahs.setOnClickListener {
-                if (input_hash.text.isNotEmpty() && Regex(".*[0-9a-z]{64}.*").matches(input_hash.text.toString())) {
-                    pause = true
-                    hash_to_calculate = input_hash.text.toString()
-
-                    apk_very_file.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "application/vnd.android.package-archive"
-                    })
-
-                } else {
-                    Toast.makeText(this, "The hash you specified is invalid", Toast.LENGTH_SHORT).show()
+                if (input_hash.text.isEmpty() && !Regex(".*[0-9a-z]{64}.*").matches(input_hash.text.toString())) {
+                    Toast.makeText(this, r_a_idioms.select_idiom(15), Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
                 }
+
+                pause = true
+                hash_to_calculate = input_hash.text.toString().toByteArray()
+
+                apk_very_file.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/vnd.android.package-archive"
+                })
+
             }
 
             hash_dialog.setOnDismissListener(object: DialogInterface.OnDismissListener {
                 override fun onDismiss(p0: DialogInterface?) {
-                    hash_to_calculate = null
+                    hash_to_calculate.let {  it?.fill(0) }
                 }
             })
 
-            create_material_dialog(this, "APK Verifier?", "This APK checker lets you know if the hash you specify matches that of the APK you upload directly from NowiVault. The hash must be calculated using the \"SHA256\" algorithm, and only the hexadecimal representation should be provided.", "", "", {}, {})
+            create_material_dialog(this, r_a_idioms.select_idiom(15), r_a_idioms.select_idiom(16), "", "", {}, {})
 
         }
 
         derived_check.setOnCheckedChangeListener(object: CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(p0: CompoundButton, check: Boolean) {
                 if (check) {
-                    create_material_dialog(this@RegisterActivity, "Key derivation?", "NowiVault's key derivation mode does away with the KeyStore for storing cryptographic keys and uses PBKDF2 (an algorithm for deriving cryptographic keys) to generate your cryptographic key when you need it." + "\nThis architecture does not store your cryptographic key, providing security similar to storing it in a TEE or a StrongBox", "Ok", "", {}, {})
+                    create_material_dialog(this@RegisterActivity, r_a_idioms.select_idiom(17), r_a_idioms.select_idiom(18), extra_idioms.select_idiom(0), "", {}, {})
                 }
             }
 
         })
 
         info_derived.setOnClickListener {
-            create_material_dialog(this@RegisterActivity, "Key derivation?", "NowiVault's key derivation mode does away with the KeyStore for storing cryptographic keys and uses PBKDF2 (an algorithm for deriving cryptographic keys) to generate your cryptographic key when you need it." + "\nThis architecture does not store your cryptographic key, providing security similar to storing it in a TEE or a StrongBox", "Ok", "", {}, {})
+            create_material_dialog(this, r_a_idioms.select_idiom(17), r_a_idioms.select_idiom(18), extra_idioms.select_idiom(0), "", {}, {})
         }
 
 
         pass_gen.setOnClickListener {
-            pass_generator_dialog(this, pref, null, input_pass)
+            pass_generator_dialog(this, pref, null, input_pass) {}
         }
 
         pris_secure_back.setOnClickListener {
@@ -569,51 +569,47 @@ class RegisterActivity : AppCompatActivity(), SensorEventListener {
     private var apk_very_file = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { (code, data) ->
 
         if (code == RESULT_CANCELED) {
-            Toast.makeText(this, "No file", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, extra_idioms.select_idiom(3), Toast.LENGTH_SHORT).show()
             return@registerForActivityResult
         }
 
         val query = contentResolver.query(data?.data!!, null, null, null, null)
-        if (query!!.moveToFirst()) {
+        if (!query!!.moveToFirst()) {
+            Toast.makeText(this, extra_idioms.select_idiom(4), Toast.LENGTH_SHORT).show()
+            return@registerForActivityResult
+        }
 
-            val body = contentResolver.openInputStream(data.data!!).use { file ->
-                file?.readBytes()
+        hash_dialog.dismiss()
+
+        val body = contentResolver.openInputStream(data.data!!).use { file ->
+            file?.readBytes()
+        }
+        val (load_dialog, load_text) = load(this, pref)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            text_load_change(pref, load_text, r_a_idioms.select_idiom(19))
+
+            var info_match = r_a_idioms.select_idiom(20)
+            var icon_match = R.drawable.match
+
+            if (!MessageDigest.isEqual(MessageDigest.getInstance("SHA256").digest(body), String(hash_to_calculate!!).hexToByteArray())) {
+                info_match = r_a_idioms.select_idiom(21)
+                icon_match = R.drawable.no_match
             }
 
-            hash_dialog.dismiss()
+            withContext(Dispatchers.Main) {
+                load_dialog.dismiss()
 
-            val (load_dialog, load_text) = load("Calculating the Hash", this)
+                val info_dialog = Dialog(this@RegisterActivity)
+                val view_dialog =
+                    create_dialog(this@RegisterActivity, R.layout.alert_dialog, info_dialog)
 
-            lifecycleScope.launch(Dispatchers.IO) {
-                var info_match = "The hashes have matched"
-                var icon_match = R.drawable.match
+                val text_info = view_dialog.findViewById<TextView>(R.id.alert_text)
+                val view_info = view_dialog.findViewById<ShapeableImageView>(R.id.alert_view)
 
-                if (!MessageDigest.isEqual(
-                        MessageDigest.getInstance("SHA256").digest(body),
-                        hash_to_calculate!!.hexToByteArray()
-                    )
-                ) {
-                    info_match = "The hash did not match"
-                    icon_match = R.drawable.no_match
-                }
-
-                withContext(Dispatchers.Main) {
-                    load_dialog.dismiss()
-
-                    val info_dialog = Dialog(this@RegisterActivity)
-                    val view_dialog =
-                        create_dialog(this@RegisterActivity, R.layout.alert_dialog, info_dialog)
-
-                    val text_info = view_dialog.findViewById<TextView>(R.id.alert_text)
-                    val view_info = view_dialog.findViewById<ShapeableImageView>(R.id.alert_view)
-
-                    text_info.text = info_match
-                    view_info.setImageResource(icon_match)
-                }
+                text_info.text = info_match
+                view_info.setImageResource(icon_match)
             }
-
-        } else {
-            Toast.makeText(this, "Empty file", Toast.LENGTH_SHORT).show()
         }
 
     }

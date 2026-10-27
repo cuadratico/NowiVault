@@ -1,11 +1,14 @@
 package com.nothingsecure.funs_extra
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
+import android.content.DialogInterface
 import android.content.SharedPreferences
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -23,8 +26,9 @@ import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.nothingsecure.R
 import com.nothingsecure.recy_information.adapter_global
-import com.nothingsecure.recy_information.holders_datas
 import com.nothingsecure.recy_information.project_class
+import com.nothingsecure.t_state
+import com.nothingsecure.time_out_state
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,7 +79,9 @@ fun pass_generator (size: Int, ini_list: List<List<Char>> = listOf(
     }
 
 }
-fun pass_generator_dialog (context: Activity, pref: SharedPreferences, info_image: ShapeableImageView? = null, pass_input: EditText? = null) {
+fun pass_generator_dialog (context: Activity, pref: SharedPreferences, info_image: ShapeableImageView? = null, pass_input: EditText? = null, dis: () -> Unit) {
+    t_state = time_out_state.stop
+
     val total = mutableListOf(minusculas_l)
 
     val gene_dilaog = BottomSheetDialog(context)
@@ -98,7 +104,7 @@ fun pass_generator_dialog (context: Activity, pref: SharedPreferences, info_imag
         pref.edit().putBoolean("gene", false).commit()
         gene_dilaog.dismiss()
         info_image!!.setImageResource(R.drawable.mail_generator)
-        email_generator(context, pref, info_image)
+        email_generator(context, pref, info_image, dis)
     }
     if (info_image == null) {
         mail_gen.visibility = View.INVISIBLE
@@ -185,9 +191,14 @@ fun pass_generator_dialog (context: Activity, pref: SharedPreferences, info_imag
             gene_dilaog.dismiss()
         }
     }
+
+    gene_dilaog.setOnDismissListener { _ -> dis() }
 }
 
-fun email_generator (context: Activity, pref: SharedPreferences, info_image: ShapeableImageView) {
+fun email_generator (context: Activity, pref: SharedPreferences, info_image: ShapeableImageView, dis: () -> Unit) {
+    t_state = time_out_state.stop
+
+    val g_idioms = idioms_instance(pref, 9)
 
     val dialog_email = BottomSheetDialog(context)
     val email_view = create_dialog(context, R.layout.email_generator_dialog, dialog_email)
@@ -202,7 +213,6 @@ fun email_generator (context: Activity, pref: SharedPreferences, info_image: Sha
 
     val but_generator = email_view.findViewById<ShapeableImageView>(R.id.generator)
 
-
     val mail_adapter = adapter_global(listOf(
         project_class.multi_data("alex-1998@hotmail.com"),
         project_class.multi_data("alex1998@hotmail.com"),
@@ -214,14 +224,14 @@ fun email_generator (context: Activity, pref: SharedPreferences, info_image: Sha
         project_class.multi_data("alex19981998@hotmail.com"),
         project_class.multi_data("19981998alex@hotmail.com"),
         project_class.multi_data("1998.alex@hotmail.com")),
-        6, holders_datas.multi_holder_data({ data ->
+        6, { data ->
             (data as project_class.multi_data)
 
             (context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
                 ClipData.newPlainText("mail", data.data)
             )
 
-        }, {})
+        }, {}
     )
     recy_emails.adapter = mail_adapter
     recy_emails.layoutManager = LinearLayoutManager(context)
@@ -230,41 +240,46 @@ fun email_generator (context: Activity, pref: SharedPreferences, info_image: Sha
         pref.edit().putBoolean("gene", true).commit()
         dialog_email.dismiss()
         info_image.setImageResource(R.drawable.generator)
-        pass_generator_dialog(context, pref, info_image)
+        pass_generator_dialog(context, pref, info_image, null, dis)
     }
 
 
 
     but_generator.setOnClickListener {
-        if (Regex("@.+\\..+").matches(input_domain.text.toString()) && input_name.text.isNotEmpty() && input_date.text.isNotEmpty()) {
-
-            val (load_dialog, info_dialog) = load("Generating the emails", context)
-
-            val name = input_name.text.toString()
-            val date = input_date.text.toString()
-            val domain = input_domain.text.toString()
-
-            CoroutineScope(Dispatchers.IO).launch {
-                val emails_list = listOf(
-                    project_class.multi_data("$name-$date$domain"),
-                    project_class.multi_data("$name$date$domain"),
-                    project_class.multi_data("$date$name$domain"),
-                    project_class.multi_data("$name.$date$domain"),
-                    project_class.multi_data("$date.$name$domain"),
-                    project_class.multi_data("$name/$date$domain"),
-                    project_class.multi_data("$date/$name$domain"),
-                    project_class.multi_data("$name${date}${date}$domain"),
-                    project_class.multi_data("$date${date}$name$domain"),
-                    project_class.multi_data("$date.$name$domain")
-                )
-
-                withContext(Dispatchers.Main) {
-                    mail_adapter.update(emails_list)
-                    load_dialog.dismiss()
-                }
-            }
-        }else {
-            Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
+        if (!Regex("@.+\\..+").matches(input_domain.text.toString()) || (input_name.text.isEmpty() || input_date.text.isEmpty() || input_domain.text.isEmpty())) {
+            Toast.makeText(context, g_idioms.select_idiom(2), Toast.LENGTH_SHORT).show()
+            return@setOnClickListener
         }
+
+        val (load_dialog, info_dialog) = load(context, pref)
+
+        val name = input_name.text.toString()
+        val date = input_date.text.toString()
+        val domain = input_domain.text.toString()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            text_load_change(pref, info_dialog, idioms_instance(pref, 0).select_idiom(16))
+
+            val emails_list = listOf(
+                project_class.multi_data("$name-$date$domain"),
+                project_class.multi_data("$name$date$domain"),
+                project_class.multi_data("$date$name$domain"),
+                project_class.multi_data("$name.$date$domain"),
+                project_class.multi_data("$date.$name$domain"),
+                project_class.multi_data("$name/$date$domain"),
+                project_class.multi_data("$date/$name$domain"),
+                project_class.multi_data("$name${date}${date}$domain"),
+                project_class.multi_data("$date${date}$name$domain"),
+                project_class.multi_data("$date.$name$domain")
+            )
+
+            withContext(Dispatchers.Main) {
+                mail_adapter.update(emails_list)
+                load_dialog.dismiss()
+            }
+        }
+
     }
+
+    dialog_email.setOnDismissListener {_ -> dis()}
 }

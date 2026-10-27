@@ -3,12 +3,12 @@ package com.nothingsecure
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.graphics.drawable.shapes.Shape
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -23,9 +23,9 @@ import com.nothingsecure.configuration_tools.edit_icon_conf
 import com.nothingsecure.configuration_tools.switch_conf
 import com.nothingsecure.funs_extra.biometric_auto
 import com.nothingsecure.funs_extra.create_material_dialog
+import com.nothingsecure.funs_extra.idioms_instance
+import com.nothingsecure.funs_extra.version_name
 import com.nothingsecure.recy_information.adapter_global
-import com.nothingsecure.recy_information.conf_holder
-import com.nothingsecure.recy_information.holders_datas
 import com.nothingsecure.recy_information.project_class
 
 class configurationActivity : AppCompatActivity() {
@@ -35,25 +35,30 @@ class configurationActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_configuration)
 
-        val pref = EncryptedSharedPreferences.create(this, "ap",
-            MasterKey.Builder(this).apply {
-                setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            }.build(),
+        val pref = EncryptedSharedPreferences.create(
+            this,
+            "ap",
+                    MasterKey.Builder(this).apply {
+                        setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    }.build(),
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+
+        val r_idioms = idioms_instance(pref, 3)
+        val extra_idioms = idioms_instance(pref, 0)
 
         val nowi_d = findViewById<ShapeableImageView>(R.id.nowi_d)
         val cat_d = findViewById<ShapeableImageView>(R.id.cat_d)
         val bug = findViewById<ShapeableImageView>(R.id.bug_r)
+        val git_d = findViewById<ShapeableImageView>(R.id.git_d)
 
         val recy_conf = findViewById<RecyclerView>(R.id.recy_conf)
 
         val version_info = findViewById<TextView>(R.id.version_info)
 
         bug.setOnClickListener {
-            create_material_dialog(this, "Do you want to leave a comment about NowiVault?", "All feedback regarding improvements to NowiVault is actively addressed by \"cuadratico\" and compiled for continuous improvement",
-                "I'd love to", "Better not", {
+            create_material_dialog(this, r_idioms.select_idiom(0), r_idioms.select_idiom(1),
+                extra_idioms.select_idiom(17), extra_idioms.select_idiom(14), {
 
                     startActivity(Intent(Intent.ACTION_VIEW, "https://docs.google.com/forms/d/e/1FAIpQLSfyW_uUiiXtZy6lkawKgNxcVQ17CC27cNS2-J1uDVjgn8LHLw/viewform".toUri()))
 
@@ -62,11 +67,8 @@ class configurationActivity : AppCompatActivity() {
         }
 
         nowi_d.setOnClickListener {
-            create_material_dialog(this, "Do you want to donate to the Nowi project?", "At Nowi, we develop Android apps focused on local defensive security.\n" +
-                    "By donating, you are supporting the project's continuity.\n" +
-                    "\n" +
-                    "Thanks for everything! \uD83D\uDE01",
-                "I'd love to", "Better not", {
+            create_material_dialog(this, r_idioms.select_idiom(2), r_idioms.select_idiom(3),
+                extra_idioms.select_idiom(17), extra_idioms.select_idiom(14), {
 
                     startActivity(Intent(Intent.ACTION_VIEW, "https://liberapay.com/Nowi".toUri()))
 
@@ -75,8 +77,8 @@ class configurationActivity : AppCompatActivity() {
         }
 
         cat_d.setOnClickListener {
-            create_material_dialog(this, "Do you want to help kittens?", "At Nowi, we believe kittens are essential to life, so why not help as many as possible? \uD83D\uDE3A",
-                "I'd love to", "Better not", {
+            create_material_dialog(this, r_idioms.select_idiom(4), r_idioms.select_idiom(5),
+                extra_idioms.select_idiom(17), extra_idioms.select_idiom(14), {
 
                     startActivity(Intent(Intent.ACTION_VIEW, "https://santuariolara.org/p/donaciones".toUri()))
 
@@ -84,17 +86,23 @@ class configurationActivity : AppCompatActivity() {
             )
         }
 
+        git_d.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, "https://github.com/cuadratico/NowiVault".toUri()))
+        }
+
 
         val config_list = listOf(
-            project_class.conf_data(R.drawable.conf_modes, "settings button", "Here, you can configure the functionality of your \"settings button\" and its icon separately.", 0),
-            project_class.conf_data(R.drawable.conf_color, "Menu color", "Here you can configure the background color of the top menu.", 1),
-            project_class.conf_data(R.drawable.conf_log, "login type", "Here, you can enable or disable the login button so that the login process is triggered based on the length of your password.", 2),
-            project_class.conf_data(R.drawable.conf_time_out, "Time-Out", "Here you can configure the NowiVault timeout, with the ability to extend or shorten your session duration.", 3),
-            project_class.conf_data(R.drawable.conf_detection, "accelerometer detection", "Here you can configure whether or not to enable accelerometer verification; this feature causes NowiVault to close if sudden movement is detected.", 4),
-            project_class.conf_data(R.drawable.conf_vibrate, "Vibration", "Here you can configure whether to enable or disable vibration feedback in NowiVault.", 5)
+            project_class.conf_data(R.drawable.conf_modes, r_idioms.select_idiom(6), r_idioms.select_idiom(7), 0),
+            project_class.conf_data(R.drawable.conf_color, r_idioms.select_idiom(8), r_idioms.select_idiom(9), 1),
+            project_class.conf_data(R.drawable.conf_log, r_idioms.select_idiom(10), r_idioms.select_idiom(11), 2),
+            project_class.conf_data(R.drawable.conf_time_out, r_idioms.select_idiom(12), r_idioms.select_idiom(13), 3),
+            project_class.conf_data(R.drawable.conf_detection, r_idioms.select_idiom(14), r_idioms.select_idiom(15), 4),
+            project_class.conf_data(R.drawable.conf_vibrate, r_idioms.select_idiom(16), r_idioms.select_idiom(17), 5),
+            project_class.conf_data(R.drawable.ray, r_idioms.select_idiom(18), r_idioms.select_idiom(19), 6)
         )
 
         val color_list = listOf(
+            project_class.multi_data("#FF000000"),
             project_class.multi_data("#4A0E17"),
             project_class.multi_data("#1A434E"),
             project_class.multi_data("#671B26"),
@@ -107,8 +115,7 @@ class configurationActivity : AppCompatActivity() {
             project_class.multi_data("#5898df")
         )
 
-        // continuar con la implementacion de las configuraciones
-        recy_conf.adapter = adapter_global(config_list, 5, holders_datas.multi_holder_data({ data ->
+        recy_conf.adapter = adapter_global(config_list, 5, { data ->
             (data as project_class.conf_data)
 
             biometric_auto(this@configurationActivity, {
@@ -148,8 +155,12 @@ class configurationActivity : AppCompatActivity() {
                         switch_conf(this, pref, "ace_force", data.info)
                     }
 
-                    else -> {
+                    5 -> {
                         switch_conf(this, pref, "vibra", data.info)
+                    }
+
+                    else -> {
+                        switch_conf(this, pref, "delay", data.info, true)
                     }
 
                 }
@@ -160,8 +171,8 @@ class configurationActivity : AppCompatActivity() {
         }, { data ->
             (data as project_class.conf_data)
 
-            create_material_dialog(this, "What does this configuration do?", data.info_material, "Ok", "", {}, {})
-        }))
+            create_material_dialog(this, r_idioms.select_idiom(20), data.info_material, extra_idioms.select_idiom(0), "", {}, {})
+        })
         recy_conf.layoutManager = LinearLayoutManager(this)
 
 

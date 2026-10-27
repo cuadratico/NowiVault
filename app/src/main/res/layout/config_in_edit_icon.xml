@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
+        android:id="@+id/info_global"
         android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:fontFamily="@font/pixel"
@@ -15,7 +16,6 @@
         android:textColor="@color/n_white"
         android:textSize="19dp"
         android:gravity="center"
-        android:text="Edit the icon and its functionalities"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -95,7 +95,6 @@
             android:id="@+id/icon_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Icon"
             android:fontFamily="@font/pixel"
             android:textColor="@color/n_blue"
             android:textSize="17dp"
@@ -124,7 +123,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:text="Explanation of the modes"
             android:fontFamily="monospace"
             />
 
@@ -132,7 +130,6 @@
             android:id="@+id/fun_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Functionality"
             android:fontFamily="@font/pixel"
             android:textColor="@color/n_blue"
             android:textSize="17dp"

@@ -64,7 +64,6 @@
             android:layout_height="wrap_content"
             android:fontFamily="monospace"
             android:textColorLink="@color/b_black"
-            android:hint="Date or a text"
             android:gravity="center"
             android:maxLines="3"
             />
@@ -91,7 +90,6 @@
             android:layout_height="wrap_content"
             android:fontFamily="monospace"
             android:textColorLink="@color/b_black"
-            android:hint="Name or a text"
             android:gravity="center"
             android:maxLines="3"
             />
@@ -127,22 +125,6 @@
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <TextView
-        android:id="@+id/info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/gen_pass_intent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:text="generates the email combinations"
-        android:textSize="20dp"
-        android:fontFamily="@font/pixel"
-        />
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/gen_pass_intent"

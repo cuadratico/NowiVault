@@ -2,33 +2,31 @@ package com.nothingsecure.funs_extra
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.imageview.ShapeableImageView
 import com.nothingsecure.R
 import com.nothingsecure.t_state
 import com.nothingsecure.time_out_state
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.resume
-import kotlin.time.Duration
+import javax.crypto.Cipher
+import kotlin.time.Duration.Companion.milliseconds
 
-fun biometric_auto (context: FragmentActivity, succeded: () -> Unit, error: () -> Unit, title: String = "Authenticate yourself") {
+fun biometric_auto (context: FragmentActivity, succeded: () -> Unit, error: () -> Unit, title: String = "G2") {
 
     BiometricPrompt(context, ContextCompat.getMainExecutor(context), object: BiometricPrompt.AuthenticationCallback() {
         override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
@@ -38,7 +36,6 @@ fun biometric_auto (context: FragmentActivity, succeded: () -> Unit, error: () -
 
         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
             super.onAuthenticationError(errorCode, errString)
-            Toast.makeText(context, "Authentication error", Toast.LENGTH_SHORT).show()
             error()
         }
     }).authenticate(
@@ -51,19 +48,29 @@ fun biometric_auto (context: FragmentActivity, succeded: () -> Unit, error: () -
 
 }
 
-fun load (info: String, context: Activity): Pair<Dialog, TextView> {
+fun load (context: Activity, pref: SharedPreferences): Pair<Dialog, TextView> {
+    t_state = time_out_state.stop
+
     val load_dialog = Dialog(context)
     val load_view = create_dialog(context, R.layout.load, load_dialog)
     load_dialog.setCancelable(false)
 
     val load_information = load_view.findViewById<TextView>(R.id.load_information)
-    load_information.text = "$info..."
+    val info_text = load_view.findViewById<TextView>(R.id.info)
+
+    info_text.text = idioms_instance(pref, 0).select_idiom(18)
 
     return Pair(load_dialog, load_information)
 }
-suspend fun text_load_change (load_input: TextView, info: String) {
-    delay(300)
-    load_input.text = "$info..."
+suspend fun text_load_change (pref: SharedPreferences, load_input: TextView, info: String) {
+    delay(10.milliseconds)
+    withContext(Dispatchers.Main) {
+        load_input.text = "$info..."
+    }
+
+    if (pref.getBoolean("delay", true)) {
+        delay(300.milliseconds)
+    }
 }
 
 fun create_dialog (context: Activity, view: Int, type: Dialog): View {
@@ -92,4 +99,27 @@ fun create_material_dialog (context: Activity, title: String, message: String, t
             n_button()
         }
     }.show()
+}
+
+fun multi_opti_dialog (context: Activity, l_icon: Int, r_icon: Int, left: (Dialog) -> Unit, right: (Dialog) -> Unit) {
+
+    val back_dialog = Dialog(context)
+    val view_back_dialog = create_dialog(context, R.layout.archive_oprtions, back_dialog)
+
+    val left_b = view_back_dialog.findViewById<ConstraintLayout>(R.id.left)
+    val left_icon = view_back_dialog.findViewById<ShapeableImageView>(R.id.left_icon)
+
+    val right_b = view_back_dialog.findViewById<ConstraintLayout>(R.id.right)
+    val right_icon = view_back_dialog.findViewById<ShapeableImageView>(R.id.right_icon)
+
+    left_icon.setImageResource(l_icon)
+    right_icon.setImageResource(r_icon)
+
+    left_b.setOnClickListener {
+        left(back_dialog)
+    }
+
+    right_b.setOnClickListener {
+        right(back_dialog)
+    }
 }

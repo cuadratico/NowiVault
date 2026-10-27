@@ -11,9 +11,7 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import com.nothingsecure.db
 import com.nothingsecure.recy_information.project_class
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
@@ -23,66 +21,73 @@ import java.security.MessageDigest
 import java.util.Base64
 import javax.crypto.Cipher
 
-suspend fun export (context: FragmentActivity, load_input: TextView, pref: SharedPreferences, pass: String, salt: String, iter: Int, algo: String, k_size: Int, arch_name: String, db: db, export_list: List<project_class.pass>) {
+suspend fun export (context: FragmentActivity, load_export: Dialog, load_input: TextView, pref: SharedPreferences, pass: String, salt: String, iter: Int, algo: String, k_size: Int, arch_name: String, db: db, export_list: List<project_class.pass>) {
+
+    val e_i_idioms = idioms_instance(pref, 7)
+    val extra_idioms = idioms_instance(pref, 0)
 
     withContext(Dispatchers.IO) {
         var us_key: Key? = null
+        var file_key: Key? = null
 
         try {
             withContext(Dispatchers.Main)  {
-                text_load_change(load_input, "Obtaining your key")
+                text_load_change(pref, load_input, extra_idioms.select_idiom(15))
             }
             us_key = deri_expressed(pref)
+            file_key = deri_expressed(null, pass, true, salt, iter, k_size, algo)
 
             val json_array = JSONArray()
 
             withContext(Dispatchers.Main)  {
-                text_load_change(load_input, "Decrypting your passwords")
+                text_load_change(pref, load_input, extra_idioms.select_idiom(11))
             }
-            for ((id, pass_all, information) in export_list) {
+            for ((id, alias, pass_all) in export_list) {
 
-                val (pass, iv) = des_es_pass(project_class.multi_data(pass_all)) as project_class.pass_extra
+                var p: ByteArray? = null
 
-                var pass_all: String? = null
+                auth_time_out(context) {
+                    val json_p = JSONObject(pass_all)
 
-                auth_time_out(context, {
-                    val us_c = cip_no_cip(pref, Cipher.DECRYPT_MODE, us_key, pref.getString("algo", "AES").toString(), iv)
-                    pass_all = String(us_c.doFinal(Base64.getDecoder().decode(pass)))
+                    val us_c = cip_no_cip(pref, Cipher.DECRYPT_MODE, us_key, pref.getString("algo", "AES").toString(), json_p.getString("iv"))
 
-                }, {
-                    us_key.let { it.encoded?.fill(0) }
-                    cancel()
-                })
+                    p = JSONObject(String(us_c.doFinal(Base64.getDecoder().decode(json_p.getString("data"))))).getString(val_p).toByteArray()
+
+                }
+                val fi_c = cip_no_cip(null, Cipher.ENCRYPT_MODE, file_key, algo)
 
                 json_array.put(JSONObject().apply {
-                    put("info", information)
-                    put("pass", pass_all)
+                    put("alias", alias)
+                    put("data_global", es_data(fi_c.doFinal(p), fi_c.iv))
                 })
+
+                p?.fill(0)
 
             }
             us_key.let { it.encoded?.fill(0) }
 
 
             withContext(Dispatchers.Main)  {
-                text_load_change(load_input, "Deriving the key from the file")
+                text_load_change(pref, load_input, e_i_idioms.select_idiom(0))
             }
-            val c = cip_no_cip(null, Cipher.ENCRYPT_MODE, deri_expressed(null, pass, true, salt, iter, k_size, algo), algo)
+            val c_global = cip_no_cip(null, Cipher.ENCRYPT_MODE, file_key, algo)
 
             withContext(Dispatchers.Main)  {
-                text_load_change(load_input, "Encrypting and building the file")
+                text_load_change(pref, load_input, e_i_idioms.select_idiom(1))
             }
             val archive_json = JSONObject().apply {
                 put("salt", salt)
                 put("iter", iter)
                 put("algo", algo)
                 put("k_size", k_size)
+                put("arch_ver", 2)
                 put("very_key", Base64.getEncoder().withoutPadding().encodeToString(MessageDigest.getInstance("SHA256").digest(pass.toByteArray() + Base64.getDecoder().decode(salt))))
-                put("data_list", Base64.getEncoder().withoutPadding().encodeToString(c.doFinal(json_array.toString().toByteArray())))
-                put("data_iv", Base64.getEncoder().withoutPadding().encodeToString(c.iv))
+                put("data_list", Base64.getEncoder().withoutPadding().encodeToString(c_global.doFinal(json_array.toString().toByteArray())))
+                put("data_iv", Base64.getEncoder().withoutPadding().encodeToString(c_global.iv))
             }.toString()
 
             withContext(Dispatchers.Main) {
-                text_load_change(load_input, "Exporting the file")
+                text_load_change(pref, load_input, e_i_idioms.select_idiom(2))
             }
             val content_archive = ContentValues().apply {
                 put(MediaStore.Files.FileColumns.DISPLAY_NAME, "$arch_name.ns")
@@ -101,143 +106,134 @@ suspend fun export (context: FragmentActivity, load_input: TextView, pref: Share
 
             vibra_conf(context, pref, longArrayOf(0, 200, 0, 200))
 
-            add_register(pref, db, "Passwords have been exported")
+            add_register(pref, db, e_i_idioms.select_idiom(3))
 
             withContext(Dispatchers.Main) {
-                text_load_change(load_input, "Exported file")
+                text_load_change(pref, load_input, e_i_idioms.select_idiom(4))
             }
 
         } catch (e: Exception) {
-            Log.e("Export error", e.toString())
+            Log.e(e_i_idioms.select_idiom(5), e.toString())
+            text_load_change(pref, load_input, "Exception")
 
             withContext(Dispatchers.Main) {
-                text_load_change(load_input, "Error exporting the file")
-                Toast.makeText(context, "Export error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, e_i_idioms.select_idiom(5), Toast.LENGTH_SHORT).show()
+                load_export.dismiss()
             }
 
         } finally {
             us_key.let { it?.encoded?.fill(0) }
+            file_key.let { it?.encoded?.fill(0) }
         }
     }
 }
 
 
 enum class import_type { preview, replace_db, add_db }
-suspend inline fun oper_values (pref: SharedPreferences, key: Key, json: JSONObject?, pass: String, list: List<project_class.pass>?, nk: Boolean, load_input: TextView, data_do: (project_class.pass) -> Unit) {
+suspend inline fun oper_values (pref: SharedPreferences, json: JSONObject?, pass: String, list: List<project_class.pass>?, alias_list: List<String>, load_input: TextView, nv_version: Int, e_i_idioms: idioms_instance, data_do: (project_class.pass) -> Unit) {
 
     if (list == null) {
-        withContext(Dispatchers.Main) {
-            text_load_change(load_input, "Deriving the key")
-        }
 
-        if (nk) {
+        var file_k: Key? = null
 
-            val deri_key = deri_expressed(
+        try {
+
+            file_k = deri_expressed(
                 null,
                 pass,
                 true,
                 json!!.getString("salt"),
                 json.getInt("iter"),
-                256,
-                "AES"
+                json.getInt("k_size"),
+                json.getString("algo")
             )
 
             withContext(Dispatchers.Main) {
-                text_load_change(load_input, "importing the file")
+                text_load_change(pref, load_input, e_i_idioms.select_idiom(6))
             }
-            val array_json = JSONArray(json.getString("pass_list"))
-
-            for (posi in 0..array_json.length() - 1) {
-
-                val j_object = array_json.getJSONObject(posi)
-                val c_im = cip_no_cip(null, Cipher.DECRYPT_MODE, deri_key, "AES", j_object.getString("iv"))
-
-                data_do(project_class.pass(posi, String(c_im.doFinal(Base64.getDecoder().decode(j_object.getString("pass")))), j_object.getString("info"), now()))
-
-            }
-
-
-        } else {
-
             val c_im = cip_no_cip(
                 null,
                 Cipher.DECRYPT_MODE,
-                deri_expressed(
-                    null,
-                    pass,
-                    true,
-                    json!!.getString("salt"),
-                    json.getInt("iter"),
-                    json.getInt("k_size"),
-                    json.getString("algo")
-                ),
+                file_k,
                 json.getString("algo"),
                 json.getString("data_iv")
             )
-
-            withContext(Dispatchers.Main) {
-                text_load_change(load_input, "importing the file")
-            }
             val array_info_dec = JSONArray(String(c_im.doFinal(Base64.getDecoder().decode(json.getString("data_list")))))
 
             for (posi in 0..array_info_dec.length() - 1) {
 
                 val json_data = array_info_dec.getJSONObject(posi)
+                var data_data = json_data.getString(alias_list[1])
 
-                data_do(project_class.pass(posi, json_data.getString("pass"), json_data.getString("info"), now()))
+                if (nv_version == 2) {
+                    val json_pass = JSONObject(data_data)
+
+                    val c_des = cip_no_cip(null, Cipher.DECRYPT_MODE, file_k, json.getString("algo"), json_pass.getString("iv"))
+                    data_data = String(c_des.doFinal(Base64.getDecoder().decode(json_pass.getString("data"))))
+                }
+
+                data_do(
+                    project_class.pass(
+                        posi,
+                        json_data.getString(alias_list[0]),
+                        data_data
+                    )
+                )
 
             }
+
+        } catch (e: GeneralSecurityException) {
+            Log.e(e_i_idioms.select_idiom(7), e.toString())
+        } finally {
+            file_k.let { it?.encoded?.fill(0) }
         }
+
 
     } else {
         withContext(Dispatchers.Main) {
-            text_load_change(load_input, "importing the list")
+            text_load_change(pref, load_input, e_i_idioms.select_idiom(8))
         }
-        for ((id, pass_all, info, time) in list) {
+        for (data in list) {
 
-            val (pas, iv) = (des_es_pass(project_class.multi_data(pass_all)) as project_class.pass_extra)
-            val c_pass = cip_no_cip(pref, Cipher.DECRYPT_MODE, key, pref.getString("algo", "AES").toString(), iv)
-
-            data_do(project_class.pass(id, String(c_pass.doFinal(Base64.getDecoder().decode(pas))), info, time))
+            data_do(data)
 
         }
     }
 }
 
-suspend fun import (context: FragmentActivity, job: CoroutineScope, pref: SharedPreferences, pass: String, list: List<project_class.pass>?, json: JSONObject?, type: import_type, load_dialog: Dialog, load_input: TextView, db: db, nk: Boolean): List<project_class.pass> {
+suspend fun import (context: FragmentActivity, pref: SharedPreferences, pass: String, list: List<project_class.pass>?, json: JSONObject?, type: import_type, load_dialog: Dialog, load_input: TextView, db: db, nv_version: Int): List<project_class.pass> {
+
+    val e_i_idimoms = idioms_instance(pref, 7)
+    val extra_idioms = idioms_instance(pref, 0)
 
     withContext(Dispatchers.Main) {
-        text_load_change(load_input, "Obtaining your key")
+        text_load_change(pref, load_input, extra_idioms.select_idiom(15))
     }
-    val us_key = deri_expressed(pref)
+    var us_key: Key? = null
     var data_list = listOf<project_class.pass>()
 
+    var alias_list = listOf("alias", "data_global")
+
+    if (nv_version == 1) {
+        alias_list = listOf("info", "pass")
+    }
+
     try {
+        us_key = deri_expressed(pref)
 
         if (type == import_type.preview) {
 
-            oper_values(pref, us_key, json, pass, list, nk, load_input) { data ->
+            oper_values(pref, json, pass, list, alias_list, load_input, nv_version, e_i_idimoms) { data ->
 
-                auth_time_out(context, {
+                auth_time_out(context) {
 
-                    val c = cip_no_cip(pref, Cipher.ENCRYPT_MODE, us_key)
+                    val c_pass = cip_no_cip(pref, Cipher.ENCRYPT_MODE, us_key)
 
-                    data_list = data_list.plus(
-                        data.copy(
-                            pass_all = (des_es_pass(
-                                project_class.pass_extra(
-                                    Base64.getEncoder().withoutPadding()
-                                        .encodeToString(c.doFinal(data.pass_all.toByteArray())),
-                                    Base64.getEncoder().withoutPadding().encodeToString(c.iv)
-                                ),
-                                false
-                            ) as project_class.multi_data).data
-                        )
-                    )
+                    data_list = data_list.plus(data.copy(
+                        pass_all = es_data(c_pass.doFinal((des_es_values(null, null, false, data.pass_all, true) as project_class.multi_data).data.toByteArray()), c_pass.iv)
+                    ))
 
-                }, {
-                    job.cancel()
-                })
+                }
 
             }
 
@@ -249,106 +245,53 @@ suspend fun import (context: FragmentActivity, job: CoroutineScope, pref: Shared
                 db.delete("info_s")
             }
 
-            oper_values (pref, us_key, json, pass, list, nk, load_input){ data ->
+            oper_values (pref, json, pass, list, alias_list, load_input, nv_version, e_i_idimoms){ data ->
 
-                auth_time_out(context, {
+                auth_time_out(context) {
 
-                    val c_pass = cip_no_cip(pref, Cipher.ENCRYPT_MODE, us_key)
+                    var pass_data = data.pass_all
 
-                    val es_pass = (des_es_pass(
-                        project_class.pass_extra(
-                            Base64.getEncoder().withoutPadding()
-                                .encodeToString(c_pass.doFinal(data.pass_all.toByteArray())),
-                            Base64.getEncoder().withoutPadding().encodeToString(c_pass.iv)
-                        ), false
-                    ) as project_class.multi_data).data
+                    if (list == null) {
+                        val c_global = cip_no_cip(pref, Cipher.ENCRYPT_MODE, us_key)
+                        pass_data = es_data(c_global.doFinal((des_es_values(null, null, false, pass_data, true) as project_class.multi_data).data.toByteArray()), c_global.iv)
+                    }
 
-                    val es_values = (des_es_values(
-                        null,
-                        data.id,
-                        data.information,
-                        es_pass
-                    ) as project_class.multi_data).data.toByteArray()
-
-                    val c_global = cip_no_cip(pref, Cipher.ENCRYPT_MODE, us_key)
-
-                    db.insert(pref, "info_s",
-                        db_create(
-                            Base64.getEncoder().withoutPadding().encodeToString(c_global.doFinal(es_values)),
-                            Base64.getEncoder().withoutPadding().encodeToString(c_global.iv)
-                        )
+                    db.insert(
+                        pref,
+                        "info_s",
+                        db_create(pref, pass_data, false, data.alias, us_key)
                     )
 
-                }, {
-                    job.cancel()
-                })
+                }
 
             }
         }
 
         vibra_conf(context, pref, longArrayOf(0, 200, 0, 200))
 
-        add_register(pref, db, "A password file has been imported")
+        add_register(pref, db, e_i_idimoms.select_idiom(9))
 
         withContext(Dispatchers.Main) {
-            text_load_change(load_input, "imported passwords")
+            text_load_change(pref, load_input, e_i_idimoms.select_idiom(10))
         }
 
         return data_list
     } catch (e: Exception) {
-        Log.e("import error", e.toString())
+        Log.e(e_i_idimoms.select_idiom(11), e.toString())
 
         withContext(Dispatchers.Main) {
-            text_load_change(load_input, "import error")
-            Toast.makeText(context, "import error", Toast.LENGTH_SHORT).show()
+            text_load_change(pref, load_input, e_i_idimoms.select_idiom(11))
+            Toast.makeText(context, e_i_idimoms.select_idiom(11), Toast.LENGTH_SHORT).show()
         }
 
         data_list = listOf()
         return data_list
     } finally {
-        us_key.let { it.encoded?.fill(0) }
+        us_key.let { it?.encoded?.fill(0) }
         data_list = listOf()
 
         withContext(Dispatchers.Main) {
             load_dialog.dismiss()
         }
     }
-}
-
-fun auth_json (json_f: JSONObject, pass: String, nk: Boolean): Boolean {
-
-    if (nk) {
-
-        val pro = json_f.getJSONArray("pro").getJSONObject(0)
-
-        try {
-            val c = cip_no_cip(null, Cipher.DECRYPT_MODE,
-                deri_expressed(
-                    null,
-                    pass,
-                    true,
-                    json_f.getString("salt"),
-                    json_f.getInt("iter"),
-                    256,
-                    "AES"
-                ),
-                "AES",
-                pro.getString("iv")
-            )
-
-            c.doFinal(Base64.getDecoder().decode(pro.getString("value")))
-
-            return true
-        } catch (e: GeneralSecurityException) {
-            return false
-        }
-
-    } else {
-        if (MessageDigest.isEqual(Base64.getDecoder().decode(json_f.getString("very_key")), MessageDigest.getInstance("SHA256").digest(pass.toByteArray() + Base64.getDecoder().decode(json_f.getString("salt"))))) {
-            return true
-        } else {
-            return false
-        }
-    }
-
 }

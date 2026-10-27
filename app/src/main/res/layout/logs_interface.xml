@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="@id/recy_logs"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="10dp"
-        android:queryHint="Date or @Message"
+        android:queryHint="Date"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout

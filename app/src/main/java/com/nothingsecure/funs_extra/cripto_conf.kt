@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ContentValues
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.DialogInterface
 import android.content.SharedPreferences
@@ -19,13 +20,15 @@ import androidx.fragment.app.FragmentActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.imageview.ShapeableImageView
 import com.nothingsecure.R
+import com.nothingsecure.recy_information.project_class
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.security.GeneralSecurityException
 import java.security.Key
 import java.security.KeyStore
+import java.security.MessageDigest
 import java.security.SecureRandom
 import java.security.spec.AlgorithmParameterSpec
 import java.util.Base64
@@ -38,12 +41,27 @@ import javax.crypto.spec.SecretKeySpec
 import kotlin.coroutines.resume
 
 
-fun deri_expressed (pref: SharedPreferences?, pass: String = pref!!.getString("key_u", "").toString(), deri: Boolean = pref!!.getBoolean("deri", false), salt: String = pref!!.getString("salt_def", "").toString(), iter: Int = pref!!.getInt("it_def", 600000), k_size: Int = pref!!.getInt("k_le", 256), algo: String = pref!!.getString("algo", "AES").toString()): Key {
+fun deri_expressed (pref: SharedPreferences?, pass: String = pref!!.getString("k_u", "").toString(), deri: Boolean = pref!!.getBoolean("deri", false), salt: String = pref!!.getString("salt_def", "").toString(), iter: Int = pref!!.getInt("it_def", 600000), k_size: Int = pref!!.getInt("k_le", 256), algo: String = pref!!.getString("algo", "AES").toString()): Key {
     return if (deri) {
         SecretKeySpec(SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(PBEKeySpec(pass.toCharArray(), Base64.getDecoder().decode(salt), iter, k_size)).encoded, algo)
     } else {
         KeyStore.getInstance("AndroidKeyStore").apply { load(null) }.getKey(pass, null)
     }
+}
+
+fun db_create (pref: SharedPreferences, data: String, regi: Boolean, info: String? = null, key: Key, ref: List<String> = listOf(db_p_meta, db_p_val), algo: String = pref.getString("algo", "AES").toString(), color: String = "#1b1b1d"): ContentValues {
+    val c_meta = cip_no_cip(pref, Cipher.ENCRYPT_MODE, key, algo)
+
+
+    return ContentValues().apply {
+        put(ref[0],
+            es_data(c_meta.doFinal((des_es_values(null, null, regi, null, false, info, color) as project_class.multi_data).data.toByteArray()), c_meta.iv)
+        )
+        put(ref[1],
+            data
+        )
+    }
+
 }
 
 fun cip_no_cip (pref: SharedPreferences? = null, mode: Int, k: Key, algo: String = pref?.getString("algo", "AES").toString(), iv: String? = null): Cipher {
@@ -62,11 +80,9 @@ fun cip_no_cip (pref: SharedPreferences? = null, mode: Int, k: Key, algo: String
     }
 }
 
-suspend fun auth_time_out (context: FragmentActivity, onSuccesse: () -> Unit, error: () -> Unit ) {
+suspend fun auth_time_out (context: FragmentActivity, onSuccesse: () -> Unit) {
     try {
-        withContext(Dispatchers.IO) {
-            onSuccesse()
-        }
+        onSuccesse()
     } catch (e: GeneralSecurityException) {
         Log.e("auth_error", e.toString())
 
@@ -77,9 +93,8 @@ suspend fun auth_time_out (context: FragmentActivity, onSuccesse: () -> Unit, er
                 biometric_auto(context, {
                     onSuccesse()
                     corru.resume(Unit)
-                }, {
-                    error()
-                })
+
+                }, { corru.resume(Unit) })
             }
         }
     }
@@ -87,10 +102,17 @@ suspend fun auth_time_out (context: FragmentActivity, onSuccesse: () -> Unit, er
 
 fun key_conf_dialog (context: Activity, pref: SharedPreferences, deri: Boolean = false, force: Boolean = false, onDismiss: (TextView, TextView, EditText, TextView) -> Unit) {
 
+    val k_idioms = idioms_instance(pref, 6)
+    val extra_idioms = idioms_instance(pref, 0)
+
     val dialog = Dialog(context)
     val view = create_dialog(context, R.layout.cripto_key_conf, dialog)
 
     var algo_list = listOf("AES", "ChaCha20")
+
+    val info = view.findViewById<TextView>(R.id.info)
+
+    info.text = k_idioms.select_idiom(6)
 
     val algo_expre = view.findViewById<TextView>(R.id.algori)
     val algo_edit = view.findViewById<ShapeableImageView>(R.id.algori_edit)
@@ -118,7 +140,7 @@ fun key_conf_dialog (context: Activity, pref: SharedPreferences, deri: Boolean =
 
     edit_size.setOnClickListener {
         MaterialAlertDialogBuilder(context).apply {
-            setTitle("Your key length is ${size_expre.text} bits")
+            setTitle(k_idioms.select_idiom(0) + " ${size_expre.text} bits")
             setAdapter(ArrayAdapter(context, android.R.layout.simple_list_item_1, size_list), object : DialogInterface.OnClickListener {
                 override fun onClick(dialog: DialogInterface?, which: Int) {
                     size_expre.text = size_list[which]
@@ -147,7 +169,7 @@ fun key_conf_dialog (context: Activity, pref: SharedPreferences, deri: Boolean =
     }
 
     iter_info.setOnClickListener {
-        create_material_dialog(context, "What exactly are interactions?", "When deriving a cryptographic key using the PBKDF2 algorithm, you need to specify a number of iterations—basically, the number of times your key will be hashed", "", "", {}, {})
+        create_material_dialog(context, k_idioms.select_idiom(1), k_idioms.select_idiom(2), "", "", {}, {})
     }
 
     val salt_expre = view.findViewById<TextView>(R.id.salt_expre)
@@ -173,14 +195,10 @@ fun key_conf_dialog (context: Activity, pref: SharedPreferences, deri: Boolean =
         if (!force) {
             create_material_dialog(
                 context,
-                "Do you want to use enhanced verification mode?",
-                "Enhanced verification mode requires additional values to derive your key, reducing the number of encrypted values NowiVault stores and consequently increasing your security.\n" +
-                        "\n" +
-                        "In this mode, you will be asked for your MasterKey, the iterations, and the salt of your derived key upon login.\n" +
-                        "\n" +
-                        "Memorize these or save them in KeePass.",
-                "Increase my security",
-                "Better not",
+                k_idioms.select_idiom(3),
+                k_idioms.select_idiom(4),
+                k_idioms.select_idiom(5),
+                extra_idioms.select_idiom(14),
                 {
                     pref.edit().putBoolean("d_v_h", true).commit()
 
@@ -203,4 +221,21 @@ fun key_conf_dialog (context: Activity, pref: SharedPreferences, deri: Boolean =
 
     })
 
+}
+
+fun very_hash (hash_1: String, value: String, salt: String): Boolean {
+    if (MessageDigest.isEqual(Base64.getDecoder().decode(hash_1), MessageDigest.getInstance("SHA256").digest(value.toByteArray() + Base64.getDecoder().decode(salt)))) {
+        return true
+    } else {
+        return false
+    }
+}
+
+fun alias_k_s (pref: SharedPreferences, data: String) {
+    pref.edit().putString("k_u", Base64.getEncoder().withoutPadding().encodeToString(MessageDigest.getInstance("SHA256").digest(data.toByteArray() + Base64.getDecoder().decode(pref.getString("s_k_c", ""))))).commit()
+}
+
+fun rege (pref: SharedPreferences, salt: String, hash: String, value: String) {
+    pref.edit().putString(salt, Base64.getEncoder().withoutPadding().encodeToString(SecureRandom().generateSeed(16))).commit()
+    pref.edit().putString(hash, Base64.getEncoder().withoutPadding().encodeToString(MessageDigest.getInstance("SHA-256").digest(value.toByteArray() + Base64.getDecoder().decode(pref.getString(salt, ""))))).commit()
 }

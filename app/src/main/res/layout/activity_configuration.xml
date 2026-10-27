@@ -64,11 +64,24 @@
             android:id="@+id/cat_d"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/nowi_d"
-            app:layout_constraintBottom_toBottomOf="@id/nowi_d"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/git_d"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginEnd="50dp"
+            android:src="@drawable/cat"
+            />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/git_d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="15dp"
-            android:src="@drawable/cat"
+            android:src="@drawable/github"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -123,7 +123,6 @@
         app:layout_constraintStart_toStartOf="parent"
         android:fontFamily="@font/pixel"
         android:textSize="30dp"
-        android:text="You don't have passwords on your file"
         android:gravity="center"
         />
 

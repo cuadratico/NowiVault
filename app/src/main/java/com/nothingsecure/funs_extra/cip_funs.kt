@@ -1,6 +1,7 @@
 package com.nothingsecure.funs_extra
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.SharedPreferences
 import android.util.Log
 import android.widget.EditText
@@ -11,31 +12,36 @@ import com.nothingsecure.db
 import com.nothingsecure.recy_information.project_class
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.security.GeneralSecurityException
 import java.security.Key
 import java.security.SecureRandom
 import java.util.Base64
 import javax.crypto.Cipher
+import kotlin.random.Random
 
-suspend fun desen_p (context: Activity, pref: SharedPreferences, p_all: String, db: db, oper_all: (ByteArray) -> Unit, final: () -> Unit) {
-    val (pass, iv) = (des_es_pass(project_class.multi_data(p_all)) as project_class.pass_extra)
+suspend fun desen_v (context: Activity, key: Key, pref: SharedPreferences, v_all: String, db: db, oper_all: (JSONObject) -> Unit, final: () -> Unit, info: String, algo: String = pref.getString("algo", "AES").toString()) {
+
+    val c_f_idioms = idioms_instance(pref, 5)
+    val extra_idioms = idioms_instance(pref, 0)
 
     var p: ByteArray? = null
 
     try {
-        val c = cip_no_cip(pref, Cipher.DECRYPT_MODE, deri_expressed(pref), pref.getString("algo", "AES").toString(), iv)
+        val json = JSONObject(v_all)
+        val c = cip_no_cip(pref, Cipher.DECRYPT_MODE, key, algo, json.getString("iv"))
 
-        p = c.doFinal(Base64.getDecoder().decode(pass))
+        p = c.doFinal(Base64.getDecoder().decode(json.getString("data")))
 
-        add_register(pref, db, "A password has been decrypted")
+        add_register(pref, db, c_f_idioms.select_idiom(0) + " $info")
         withContext(Dispatchers.Main) {
-            oper_all(p)
+            oper_all(JSONObject(String(p)))
         }
     } catch (e: Exception) {
-        Log.e("Error decrypting the password", e.toString())
+        Log.e(extra_idioms.select_idiom(7), e.toString())
 
         withContext(Dispatchers.Main) {
-            Toast.makeText(context, "Error decrypting the password", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, extra_idioms.select_idiom(7), Toast.LENGTH_SHORT).show()
         }
     } finally {
         p.let { it?.fill(0) }
@@ -45,8 +51,11 @@ suspend fun desen_p (context: Activity, pref: SharedPreferences, p_all: String, 
 
 suspend fun cip_p_v (context: Activity, pref: SharedPreferences, db: db, info_dialog: TextView, input_p: EditText, input_i: EditText, list_oper: (Int, String) -> Unit, finish_ac: () -> Unit, final: () -> Unit, db_op: Boolean = true, id_db: Int? = null) {
 
+    val c_f_idioms = idioms_instance(pref, 5)
+    val extra_idioms = idioms_instance(pref, 0)
+
     withContext(Dispatchers.Main) {
-        text_load_change(info_dialog, "Encrypting the data")
+        text_load_change(pref, info_dialog, extra_idioms.select_idiom(8))
     }
 
     var k: Key? = null
@@ -55,21 +64,17 @@ suspend fun cip_p_v (context: Activity, pref: SharedPreferences, db: db, info_di
 
         k = deri_expressed(pref)
 
-        val c_pass = cip_no_cip(pref, Cipher.ENCRYPT_MODE, k)
+        val c_data = cip_no_cip(pref, Cipher.ENCRYPT_MODE, k)
 
-        val pass_all = (des_es_pass(project_class.pass_extra(Base64.getEncoder().withoutPadding().encodeToString(c_pass.doFinal(input_p.text.toString().toByteArray())), Base64.getEncoder().withoutPadding().encodeToString(c_pass.iv)), false) as project_class.multi_data).data
+        val cip_data = es_data(c_data.doFinal((des_es_values(null, null, false, input_p.text.toString(), true) as project_class.multi_data).data.toByteArray()), c_data.iv)
 
         var id = 0
         if (pref.getBoolean("db_sus", true)) {
             withContext(Dispatchers.Main) {
-                text_load_change(info_dialog, "Adding to the database")
+                text_load_change(pref, info_dialog, extra_idioms.select_idiom(9))
             }
 
-            val c_global = cip_no_cip(pref, Cipher.ENCRYPT_MODE, k)
-
-            val json = Base64.getEncoder().withoutPadding().encodeToString(c_global.doFinal((des_es_values(null, null, input_i.text.toString(), pass_all) as project_class.multi_data).data.toByteArray()))
-
-            val db_va = db_create(json, Base64.getEncoder().withoutPadding().encodeToString(c_global.iv))
+            val db_va = db_create(pref, cip_data, false, input_i.text.toString(), k)
             if (db_op) {
                 id = db.insert(pref, "info_s", db_va).toInt()
             } else {
@@ -77,9 +82,9 @@ suspend fun cip_p_v (context: Activity, pref: SharedPreferences, db: db, info_di
             }
         }
 
-        list_oper(id, pass_all)
+        list_oper(id, cip_data)
 
-        add_register(pref, db, if (db_op) { "A password has been added" } else { "A password has been edited" })
+        add_register(pref, db, if (db_op) { c_f_idioms.select_idiom(1) } else { c_f_idioms.select_idiom(2) })
 
         withContext(Dispatchers.Main) {
             finish_ac()
@@ -91,7 +96,7 @@ suspend fun cip_p_v (context: Activity, pref: SharedPreferences, db: db, info_di
         withContext(Dispatchers.Main) {
             input_p.text.clear()
             input_i.text.clear()
-            Toast.makeText(context, "Error encrypting data", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, extra_idioms.select_idiom(10), Toast.LENGTH_SHORT).show()
         }
 
     } finally {
@@ -102,7 +107,10 @@ suspend fun cip_p_v (context: Activity, pref: SharedPreferences, db: db, info_di
     }
 }
 
-suspend fun des_p_l_v (context: FragmentActivity, pref: SharedPreferences, input_load: TextView, db: db, values_modi: () -> Unit, list_oper: (String, Int) -> Unit, honey_pot: (Int, String, String) -> Unit, key: String = pref.getString("key_u", "").toString(), algo: String = pref.getString("algo", "AES").toString(), logs: Boolean = false) {
+suspend fun des_p_l_v (context: FragmentActivity, pref: SharedPreferences, load_dialog: Dialog, input_load: TextView, db: db, values_modi: () -> Unit, list_oper: (Int, String, String) -> Unit, honey_pot: (project_class.pass) -> Unit, key: String = pref.getString("k_u", "").toString(), algo: String = pref.getString("algo", "AES").toString(), logs: Boolean = false) {
+
+    val c_f_idioms = idioms_instance(pref, 5)
+    val extra_idioms = idioms_instance(pref, 0)
 
     var k: Key? = null
 
@@ -112,7 +120,7 @@ suspend fun des_p_l_v (context: FragmentActivity, pref: SharedPreferences, input
         if (!pref.getBoolean("honeypot_mod", false)) {
 
             withContext(Dispatchers.Main) {
-                text_load_change(input_load, "Extracting data from the database")
+                text_load_change(pref, input_load, extra_idioms.select_idiom(12))
             }
             val p_list = db.select(
                 if (logs) {
@@ -122,32 +130,18 @@ suspend fun des_p_l_v (context: FragmentActivity, pref: SharedPreferences, input
                 }
             )
 
-            fun des_va(id: Int, js: String, iv: String) {
-                val c = cip_no_cip(pref, Cipher.DECRYPT_MODE, k, algo, iv)
-                if (logs) {
-                    list_oper(String(c.doFinal(Base64.getDecoder().decode(js))), id)
-                } else {
-                    list_oper(String(c.doFinal(Base64.getDecoder().decode(js))), id)
-                }
-            }
-
             withContext(Dispatchers.Main) {
-                text_load_change(input_load, "Decrypting the data")
+                text_load_change(pref, input_load, extra_idioms.select_idiom(11))
             }
 
-            for ((id, data, iv) in p_list) {
-                try {
-                    des_va(id, data, iv)
-                } catch (error: GeneralSecurityException) {
-                    Log.e("Key timeout exceeded", error.toString())
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Time-out exceeded", Toast.LENGTH_SHORT).show()
+            for ((id, meta_data, values_data) in p_list) {
+                val json = JSONObject(meta_data)
 
-                        auth_time_out(context, {
-                            des_va(id, data, iv)
-                        }, {})
-                    }
+                auth_time_out(context) {
+                    val c = cip_no_cip(pref, Cipher.DECRYPT_MODE, k, algo, json.getString("iv"))
+                    list_oper(id, String(c.doFinal(Base64.getDecoder().decode(json.getString("data")))), values_data)
                 }
+
             }
 
         } else {
@@ -175,16 +169,11 @@ suspend fun des_p_l_v (context: FragmentActivity, pref: SharedPreferences, input
                 val c = cip_no_cip(pref, Cipher.ENCRYPT_MODE, k)
 
                 honey_pot(
-                    position, alias, (des_es_pass(
-                        project_class.pass_extra(
-                            Base64.getEncoder().withoutPadding().encodeToString(
-                                c.doFinal(
-                                    pass_generator(SecureRandom().nextInt(6) + 6).toByteArray()
-                                )
-                            ),
-                            Base64.getEncoder().withoutPadding().encodeToString(c.iv)
-                        ), false
-                    ) as project_class.multi_data).data
+                    project_class.pass(
+                        position,
+                        alias,
+                        es_data(c.doFinal((des_es_values(null, null, false, pass_generator(Random.nextInt(8, 20)), true) as project_class.multi_data).data.toByteArray()), c.iv)
+                    )
                 )
 
                 alias_false.remove(alias)
@@ -192,22 +181,14 @@ suspend fun des_p_l_v (context: FragmentActivity, pref: SharedPreferences, input
         }
 
         withContext(Dispatchers.Main) {
-            text_load_change(input_load, "Finishing processing the data")
+            text_load_change(pref, input_load, c_f_idioms.select_idiom(3))
         }
 
         if (!logs) {
             pref.edit().putBoolean("desen_pass", true).commit()
         }
 
-        add_register(
-            pref, db, "The ${
-                if (logs) {
-                    "logs"
-                } else {
-                    "metadata"
-                }
-            } have been decrypted"
-        )
+        add_register(pref, db, c_f_idioms.select_idiom(4))
 
         withContext(Dispatchers.Main) {
             values_modi()
@@ -215,13 +196,17 @@ suspend fun des_p_l_v (context: FragmentActivity, pref: SharedPreferences, input
 
     } catch (e: Exception) {
 
-        Log.e("Error decrypting the values", e.toString())
+        Log.e(extra_idioms.select_idiom(7), e.toString())
 
         withContext(Dispatchers.Main) {
-            Toast.makeText(context, "Error decrypting the values", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, extra_idioms.select_idiom(7), Toast.LENGTH_SHORT).show()
         }
 
     } finally {
         k.let { it?.encoded?.fill(0) }
+
+        withContext(Dispatchers.Main) {
+            load_dialog.dismiss()
+        }
     }
 }

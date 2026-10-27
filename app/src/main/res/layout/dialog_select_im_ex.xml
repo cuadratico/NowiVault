@@ -6,6 +6,7 @@
 
 
     <TextView
+        android:id="@+id/info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/pixel"
@@ -15,7 +16,6 @@
         app:layout_constraintBottom_toTopOf="@id/all_exporting"
         android:layout_marginBottom="20dp"
         android:maxWidth="300dp"
-        android:text="What do you want to do"
         android:textColor="@color/white"
         />
 

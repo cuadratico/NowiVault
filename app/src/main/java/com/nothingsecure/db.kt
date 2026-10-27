@@ -5,15 +5,14 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 
 
-data class data_extract_list (val id: Int, val data: String, val iv: String)
+data class data_extract_list (val id: Int, val global_meta: String, val global_pass: String)
 
 class db (context: Context): SQLiteOpenHelper(context, "information.db", null, 1){
     override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL("CREATE TABLE info_r (id INTEGER PRIMARY KEY AUTOINCREMENT, global_time TEXT, iv TEXT)")
-        db?.execSQL("CREATE TABLE info_s (id INTEGER PRIMARY KEY AUTOINCREMENT, global_pass TEXT, iv TEXT)")
+        db?.execSQL("CREATE TABLE info_r (id INTEGER PRIMARY KEY AUTOINCREMENT, global_t_meta TEXT, global_t_s)")
+        db?.execSQL("CREATE TABLE info_s (id INTEGER PRIMARY KEY AUTOINCREMENT, global_meta TEXT, global_pass TEXT)")
     }
     override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {}
 

@@ -4,23 +4,8 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
-    <TextView
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:text="Go back to my archive"
-        android:fontFamily="@font/pixel"
-        android:textSize="19dp"
-        android:textColor="@color/n_white"
-        app:layout_constraintBottom_toTopOf="@id/go_back"
-        app:layout_constraintEnd_toEndOf="@id/go_back"
-        app:layout_constraintStart_toStartOf="@id/go_back"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        />
-
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/go_back"
+        android:id="@+id/right"
         android:layout_width="75dp"
         android:layout_height="70dp"
         android:background="@drawable/corner_25"
@@ -28,15 +13,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/save_archive"
+        app:layout_constraintStart_toEndOf="@id/left"
         >
 
 
         <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/import_archive"
+            android:id="@+id/right_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/arrow_l"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -46,41 +30,27 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:text="save to my archive"
-        android:fontFamily="@font/pixel"
-        android:textSize="19dp"
-        android:textColor="@color/n_white"
-        app:layout_constraintBottom_toTopOf="@id/save_archive"
-        app:layout_constraintEnd_toEndOf="@id/save_archive"
-        app:layout_constraintStart_toStartOf="@id/save_archive"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        />
-
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/save_archive"
+        android:id="@+id/left"
         android:layout_width="75dp"
         android:layout_height="70dp"
         android:background="@drawable/corner_25"
         android:backgroundTint="@color/b_black"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/go_back"
+        app:layout_constraintEnd_toStartOf="@id/right"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginEnd="20dp"
         >
 
         <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/left_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:src="@drawable/save_archive"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
